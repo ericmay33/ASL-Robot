@@ -1,0 +1,26 @@
+
+
+{
+  "token": "HELLO",
+  "type": "static",
+  "duration": 1.5,
+  "facialExpression": "smile",
+  "keyframes": [
+    {
+      "time": 0.0,
+      "joints": {
+        "rightShoulderX": 30,
+        "rightElbow": 45,
+        "rightWrist": 10
+      }
+    },
+    {
+      "time": 0.5,
+      "joints": {
+        "rightShoulderX": 15,
+        "rightElbow": 60,
+        "rightWrist": 20
+      }
+    }
+  ]
+}
