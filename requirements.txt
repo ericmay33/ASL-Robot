@@ -1,3 +1,2 @@
-# Requirements/Packages for the ASL-Robot Project
 pymongo
 python-dotenv
