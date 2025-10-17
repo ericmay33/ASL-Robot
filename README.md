@@ -58,7 +58,7 @@ This .env file should remain private and not tracked by Git. Credentials can be 
 Once setup is complete, you can run the project with the following command:
 
 ```bash
-python -m src.main
+python -B -m src.main
 ```
 
 ---
