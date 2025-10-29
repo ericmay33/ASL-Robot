@@ -1,4 +1,5 @@
 from src.database.db_connection import get_database
+from src.config.settings import SETTINGS
 
 def test_db_connection():
     # Simple test to ensure MongoDB connection works.
