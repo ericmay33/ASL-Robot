@@ -1,2 +1,5 @@
 pymongo
 python-dotenv
+google-cloud-speech
+google-auth          
+pyaudio
