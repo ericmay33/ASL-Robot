@@ -9,6 +9,7 @@ class Settings:
     # MongoDB
     MONGODB_URI: str = os.getenv("MONGODB_URI")
     MONGODB_DB_NAME: str = os.getenv("MONGODB_DB_NAME")
+    GOOGLE_STT: dict = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 
     SIGNS_COLLECTION: str = "signs"
 
