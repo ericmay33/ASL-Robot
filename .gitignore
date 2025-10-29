@@ -2,3 +2,5 @@
 
 __pycache__
 *.pyc
+
+stt_key_file.json
