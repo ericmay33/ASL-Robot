@@ -1,9 +1,6 @@
-
-
 {
   "token": "HELLO",
-  "type": "static",
-  "facialExpression": "smile",
+  "facialExpression": "happy",
   "hands": {
     "left": {
       "keyframes": [
