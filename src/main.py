@@ -1,14 +1,14 @@
-from src.database.db_connection import get_database
-from src.config.settings import SETTINGS
+from src.database.db_connection import DatabaseConnection
+from src.database.db_functions import get_sign_by_token
 
-def test_db_connection():
-    # Simple test to ensure MongoDB connection works.
-    try:
-        db = get_database()
-        print("Connection success:", db.name)
-        print("Collections:", db.list_collection_names())
-    except Exception as e:
-        print("Connection failed:", e)
+def main():
+    # Initialize the database connection once at startup.
+    DatabaseConnection.initialize()
+
+    # Example usage: database function call after initialization.
+    sign = get_sign_by_token("HELLO")
+    if sign:
+        print(sign)
 
 if __name__ == "__main__":
-    test_db_connection()
+    main()

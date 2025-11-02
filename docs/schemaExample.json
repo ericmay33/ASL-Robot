@@ -1,0 +1,18 @@
+{
+  "token": "HELLO",
+  "facialExpression": "happy",
+  "hands": {
+    "left": {
+      "keyframes": [
+        {"time": 0.0, "joints": [30, 45, 10]},
+        {"time": 0.5, "joints": [15, 60, 20]}
+      ]
+    },
+    "right": {
+      "keyframes": [
+        {"time": 0.0, "joints": [30, 45, 10]},
+        {"time": 0.5, "joints": [15, 60, 20]}
+      ]
+    }
+  }
+}
