@@ -6,9 +6,7 @@ def main():
     DatabaseConnection.initialize()
 
     # Example usage: database function call after initialization.
-    sign = get_sign_by_token("HELLO")
-    if sign:
-        print(sign)
+    # sign = get_sign_by_token("HELLO")
 
 if __name__ == "__main__":
     main()
