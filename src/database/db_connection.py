@@ -19,6 +19,6 @@ class DatabaseConnection:
     # Return the 'signs' collection.
     @classmethod
     def get_collection(cls):
-        if cls._signs is None:
+        if cls.signs is None:
             raise Exception("Database not initialized.")
         return cls.signs
