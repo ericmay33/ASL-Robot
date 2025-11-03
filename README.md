@@ -7,6 +7,8 @@ Main-Folder/
 │
 ├── src/
 │   ├── main.py                         # Entry point for running the system
+│   ├── executeSign.py
+│   ├── arduino.cpp
 │   ├── config/
 │   │   └── settings.py                 # Loads environment variables
 │   ├── database/
@@ -17,12 +19,13 @@ Main-Folder/
 │   └── text_to_ASL/
 │       └── translate_AI.py             # AI text to ASL 
 │  
-├── translator.ipynb                    # AI text to ASL Translation
+├── README.md                           # Project overview and setup instructions
 ├── stt_key_file.json                   # Stores credentials (not tracked in Git)
-├── .gitignore
 ├── .env                                # Stores credentials (not tracked in Git)
+├── .gitignore                          
 ├── requirements.txt                    # Python dependencies
-└── README.md                           # Project overview and setup instructions
+├── platform.ini                        # PlatformIO Project file
+└── translator.ipynb                    # Project overview and setup instructions
 ```
 
 ---
