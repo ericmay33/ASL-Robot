@@ -7,3 +7,6 @@ stt_key_file.json
 
 .pio
 .vscode
+
+InputFiles/*.txt
+OutputFiles/*.txt
