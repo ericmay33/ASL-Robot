@@ -3,3 +3,6 @@ python-dotenv
 google-cloud-speech
 google-auth          
 pyaudio
+google-genai
+watchdog
+pandas

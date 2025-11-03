@@ -1,3 +1,4 @@
-The duck quacked.
-We are using the Gemini API for this project.
-This notebook provides a great environment for prototyping.
+Hello! 
+How are you?
+What is your favorite kind of ice cream?
+This is red

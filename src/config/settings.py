@@ -30,6 +30,8 @@ class Settings:
     GOOGLE_CREDS_PATH: Optional[str] = GOOGLE_CREDS_PATH
     GOOGLE_CREDENTIALS: Optional[Dict[str, Any]] = GOOGLE_CREDENTIALS
     
+    GEMINI_API_KEY: Optional[str] = os.getenv("GEMINI_API_KEY")
+    
     SIGNS_COLLECTION: str = "signs"
 
     def validate(self):
@@ -47,6 +49,9 @@ class Settings:
             missing.append("Google Credentials file not found.")
         elif not self.GOOGLE_CREDENTIALS:
             missing.append("Google Credentials file could not be parsed as JSON.")
+            
+        if not self.GEMINI_API_KEY:
+            missing.append("GEMINI_API_KEY")
             
         if missing:
             raise ValueError(f"Missing environment variables/invalid configuration: {', '.join(missing)}")
