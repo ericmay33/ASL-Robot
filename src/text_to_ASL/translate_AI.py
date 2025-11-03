@@ -19,9 +19,14 @@ client = genai.Client(api_key=SETTINGS.GEMINI_API_KEY)
 model_name = "gemini-2.5-flash" 
 output_filename = "gemini_output_log.txt"
 
-WATCH_DIRECTORY = r"C:\Users\evanv\OneDrive\Computer_Science\JuniorYear\ASL-Robot\InputFiles"
-OUTPUT_DIRECTORY = r"C:\Users\evanv\OneDrive\Computer_Science\JuniorYear\ASL-Robot\OutputFiles"
-TARGET_FILE_NAME = "input.txt" 
+# --- Path Anchoring ---
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.join(SCRIPT_DIR, '..', '..') 
+
+# Define the final absolute paths for the directories
+WATCH_DIRECTORY = os.path.join(ROOT_DIR, "InputFiles")
+OUTPUT_DIRECTORY = os.path.join(ROOT_DIR, "OutputFiles")
+TARGET_FILE_NAME = "input.txt"
 
 #store tokens not in the database
 def fetch_tokens(response):
