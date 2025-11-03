@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 client_file = 'stt_key_file.json' 
 credentials = service_account.Credentials.from_service_account_file(client_file)
 client = speech.SpeechClient(credentials=credentials)
+OUTPUT_DIRECTORY = r"C:\Users\evanv\OneDrive\Computer_Science\JuniorYear\ASL-Robot\InputFiles"
 
 # Audio setup 
 RATE = 16000  # Sample rate (Hz)
@@ -48,6 +49,8 @@ responses = client.streaming_recognize(streaming_config, generator())
 
 trans_begun = False
 
+token_file = os.path.join(OUTPUT_DIRECTORY, "input.txt")
+
 # work after a prompt
 for response in responses:
     for result in response.results:
@@ -75,6 +78,8 @@ for response in responses:
             elif trans_begun:
                 # handles all final results between the start and end phrases
                 print("Final transcript:", transcript)
+                with open(token_file, 'a', encoding='utf-8') as outfile:
+                    outfile.write(transcript + "\n")
 
         #else: # interim results
         #    if trans_begun:
