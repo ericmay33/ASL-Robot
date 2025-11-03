@@ -76,7 +76,7 @@ for response in responses:
                 # handles all final results between the start and end phrases
                 print("Final transcript:", transcript)
 
-        else: # interim results
-            if trans_begun:
-                # Handles all interim results between the start and end phrases
-                print("Interim:", transcript, end="\r")
+        #else: # interim results
+        #    if trans_begun:
+        #        # Handles all interim results between the start and end phrases
+        #        print("Interim:", transcript, end="\r")
