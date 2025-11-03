@@ -14,6 +14,8 @@ Main-Folder/
 │   │   └── db_functions.py             # MongoDB database function/interaction
 │   └── speech_to_text/
 │       └── stt.py                      # Speech to text
+│   └── text_to_ASL/
+│       └── translate_AI.py             # AI text to ASL 
 │  
 ├── translator.ipynb                    # AI text to ASL Translation
 ├── stt_key_file.json                   # Stores credentials (not tracked in Git)
@@ -40,6 +42,10 @@ This will install:
 * `google-cloud-speech`
 * `google-auth`
 * `pyaudio`
+* `google-genai`
+* `watchdog`
+* `pandas`
+
 
 ---
 
@@ -52,9 +58,12 @@ MONGO_URI=mongodb+srv://<USERNAME>:<PASSWORD>@<YOUR_CLUSTER>.mongodb.net/
 MONGO_DB_NAME=ASLSignsDB
 
 GOOGLE_APPLICATION_CREDENTIALS="stt_key_file.json"
+
+GEMINI_API_KEY="apikey"
 ```
 
 > **Note:** Replace `<USERNAME>` and `<PASSWORD>` with the project’s MongoDB superuser credentials.
+
 
 This .env file should remain private and not tracked by Git. Credentials can be found in shared OneDrive folder.
 
