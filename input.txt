@@ -1,3 +1,0 @@
-The duck quacked.
-We are using the Gemini API for this project.
-This notebook provides a great environment for prototyping.
