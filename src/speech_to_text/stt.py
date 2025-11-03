@@ -7,8 +7,9 @@ from google.oauth2 import service_account
 from dotenv import load_dotenv
 
 # Authentication 
-load_dotenv(dotenv_path='key.env')
-client = speech.SpeechClient()#credentials=credentials)
+client_file = 'stt_key_file.json' 
+credentials = service_account.Credentials.from_service_account_file(client_file)
+client = speech.SpeechClient(credentials=credentials)
 
 # Audio setup 
 RATE = 16000  # Sample rate (Hz)
