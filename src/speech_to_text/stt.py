@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 client_file = 'stt_key_file.json' 
 credentials = service_account.Credentials.from_service_account_file(client_file)
 client = speech.SpeechClient(credentials=credentials)
-OUTPUT_DIRECTORY = r"C:\Users\evanv\OneDrive\Computer_Science\JuniorYear\ASL-Robot\InputFiles"
+OUTPUT_DIRECTORY = r"C:\Users\Morgan\Downloads\fall_25\Capstone1\ASL-Robot\InputFiles"
 
 # Audio setup 
 RATE = 16000  # Sample rate (Hz)
