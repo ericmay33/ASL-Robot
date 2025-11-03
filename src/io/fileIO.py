@@ -16,12 +16,11 @@ class FileIOManager:
         line = self.stt_line_queue.get()
         if self.stt_line_queue.empty():
             self.stt_new_signal.clear()
-        
         return line
     
     def push_asl_token(self, token):
         self.asl_token_queue.put(token)
-        self.ai_new_signal.set()
+        self.asl_new_signal.set()
     
     def pop_asl_token(self):
         token = self.asl_token_queue.get()
