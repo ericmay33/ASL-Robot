@@ -1,13 +1,10 @@
 from src.database.db_connection import DatabaseConnection
 from src.database.db_functions import get_sign_by_token
 
-def main():
-    # Initialize the database connection once at startup.
-    DatabaseConnection.initialize()
+DatabaseConnection.initialize()
 
-    # Example usage: database function call after initialization.
-    sign = get_sign_by_token("HELLO")
-    print(sign)
+signs = ["HELLO", "NO", "I"]
 
-if __name__ == "__main__":
-    main()
+for sign in signs:
+    sign_data = get_sign_by_token(sign)
+    print(f"Retrieved sign: {sign_data}")
