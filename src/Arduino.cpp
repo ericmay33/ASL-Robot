@@ -6,7 +6,7 @@ Servo servos[NUM_SERVOS];
 int servoPins[NUM_SERVOS] = {2, 3, 4, 5, 6}; 
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   for (int i = 0; i < NUM_SERVOS; i++) {
     servos[i].attach(servoPins[i]);
     servos[i].write(90);  // start neutral

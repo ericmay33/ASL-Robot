@@ -3,7 +3,7 @@ from src.database.db_connection import DatabaseConnection
 from src.database.db_functions import get_sign_by_token
 
 # --- CONFIG ---
-ESP32_PORT = "/dev/tty.usbserial-0001"   # Change to your actual port
+ESP32_PORT = "/dev/cu.usbmodem1201"   # Change to your actual port
 BAUD_RATE = 115200
 INSTRUCTIONS_FILE = "OutputFiles/gemini_output_log.txt"
 
