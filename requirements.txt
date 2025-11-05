@@ -4,5 +4,5 @@ google-cloud-speech
 google-auth          
 pyaudio
 google-genai
-watchdog
-pandas
+serial
+pyserial
