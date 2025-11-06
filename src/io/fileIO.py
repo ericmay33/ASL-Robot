@@ -7,7 +7,6 @@ class FileIOManager:
         self.asl_token_queue = Queue()
         self.motion_queue = Queue()
         
-        
         self.stt_new_signal = Event()
         self.asl_new_signal = Event()
         self.motion_new_signal = Event()
@@ -34,18 +33,12 @@ class FileIOManager:
             self.asl_new_signal.clear()
         return token
     
-    def push_motion_script(self, script: dict):
-        try:
-            self.motion_queue.put(script, block=False)
-            self.motion_new_signal.set()
-        except Full:
-            print("[WARN] Motion buffer full — waiting for ACK before pushing next.")
+    def push_motion_script_token(self, motion_script):
+        self.motion_queue.put(motion_script)
+        self.motion_new_signal.set()
 
-    def pop_motion_script(self):
-        try:
-            script = self.motion_queue.get(block=True)
-            if self.motion_queue.empty():
-                self.motion_new_signal.clear()
-            return script
-        except Empty:
-            return None
+    def pop_motion_script_token(self):
+        motion_script = self.motion_queue.get()
+        if self.motion_queue.empty():
+            self.motion_new_signal.clear()
+        return motion_script

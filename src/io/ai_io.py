@@ -1,4 +1,5 @@
 from src.text_to_ASL.translate_AI import translate_to_asl_gloss
+import time
 
 def run_ai(file_io):
     print("[AI_IO] Started AI translation loop.")
@@ -23,6 +24,9 @@ def run_ai(file_io):
             for token in tokens:
                 file_io.push_asl_token(token)
                 print(f"[AI_IO] Queued ASL token: {token}")
+        
+        # Reduce thread load
+        time.sleep(0.01)
 
-        # Once STT queue is empty, the signal will be cleared by FileIOManager
-        # and this loop will go back to waiting for the next STT signal
+    # Once STT queue is empty, the signal will be cleared by FileIOManager
+    # and this loop will go back to waiting for the next STT signal
