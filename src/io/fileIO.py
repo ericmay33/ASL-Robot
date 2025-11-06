@@ -33,11 +33,11 @@ class FileIOManager:
             self.asl_new_signal.clear()
         return token
     
-    def push_motion_script_token(self, motion_script):
+    def push_motion_script(self, motion_script):
         self.motion_queue.put(motion_script)
         self.motion_new_signal.set()
 
-    def pop_motion_script_token(self):
+    def pop_motion_script(self):
         motion_script = self.motion_queue.get()
         if self.motion_queue.empty():
             self.motion_new_signal.clear()
