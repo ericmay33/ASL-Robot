@@ -2,7 +2,7 @@
 import json, serial, time
 from bson import ObjectId
 
-def run_motion(file_io, port="/dev/cu.usbmodem1201", baud=115200):
+def run_motion(file_io, port="/dev/cu.usbmodem11201", baud=115200):
     try:
         ser = serial.Serial(port, baud, timeout=2)
         print(f"[MOTION_IO] Connected to {port}")

@@ -5,7 +5,7 @@
 // ===== CONFIG =====
 #define SERVO_COUNT 5      // Number of servos in use
 #define MAX_QUEUE 3          // Buffer up to 3 signs
-#define DEFAULT_SPEED 225    // Servo move speed (1–255)
+#define DEFAULT_SPEED 90    // Servo move speed (1–255)
 #define BAUD_RATE 115200     // Match Python serial speed
 
 // ===== GLOBALS =====
