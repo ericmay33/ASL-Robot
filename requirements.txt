@@ -4,5 +4,4 @@ google-cloud-speech
 google-auth          
 pyaudio
 google-genai
-serial
 pyserial
