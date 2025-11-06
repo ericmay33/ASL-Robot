@@ -7,7 +7,6 @@ Main-Folder/
 │
 ├── src/
 │   ├── main.py                         # Entry point for running the system
-│   ├── executeSign.py
 │   ├── arduino.cpp
 │   ├── config/
 │   │   └── settings.py                 # Loads environment variables
@@ -17,7 +16,16 @@ Main-Folder/
 │   └── speech_to_text/
 │       └── stt.py                      # Speech to text
 │   └── text_to_ASL/
-│       └── translate_AI.py             # AI text to ASL 
+│       └── translate_AI.py             # AI text to ASL
+│   └── io/
+│       ├── ai_io.py                    # Thread translating lines to tokens
+│       ├── db_io.py                    # Thread retreiving motions from database with tokens
+│       ├── fileIO.py                   # File IO Manager
+│       ├── motion_io.py                # Thread handling sending motion signs
+│       └── stt_io.py                   # Thread handling STT 
+│   └── signs/
+│       ├── signs_to_seed.json          # All sign data json
+│       └── seed_signs.py               # MongoDB Seeder Script
 │  
 ├── README.md                           # Project overview and setup instructions
 ├── stt_key_file.json                   # Stores credentials (not tracked in Git)
@@ -40,14 +48,13 @@ pip install -r requirements.txt
 
 This will install:
 
-* `pymongo` (MongoDB client)
-* `python-dotenv` (.env variable loader)
-* `google-cloud-speech`
-* `google-auth`
-* `pyaudio`
-* `google-genai`
-* `watchdog`
-* `pandas`
+* pymongo
+* python-dotenv
+* google-cloud-speech
+* google-auth          
+* pyaudio
+* google-genai
+* pyserial
 
 
 ---
