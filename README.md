@@ -8,30 +8,27 @@ An ASL (American Sign Language) Robot that converts spoken English into ASL sign
 ASL-Robot/
 │
 ├── src/
-│   ├── main.py                         # Entry point - multi-threaded system orchestration
-│   ├── Arduino.cpp                     # Arduino/ESP32 firmware for servo control
+│   ├── main.py                         # System Entry point
+│   ├── Arduino.cpp                     # Arduino/ESP32 sketch for servo control
 │   ├── config/
 │   │   └── settings.py                 # Environment variable loading and validation
 │   ├── database/
-│   │   ├── db_connection.py            # MongoDB connection initialization
-│   │   └── db_functions.py             # Database query functions (get, insert, delete signs)
-│   ├── io/
-│   │   ├── fileIO.py                   # FileIOManager - thread-safe queue system for inter-thread communication
-│   │   ├── stt_io.py                   # Speech-to-text I/O handler thread
-│   │   ├── ai_io.py                    # AI translation I/O handler thread
-│   │   ├── db_io.py                    # Database lookup I/O handler thread
-│   │   └── motion_io.py                # Motion execution I/O handler thread (serial communication)
-│   ├── speech_to_text/
-│   │   └── stt.py                      # Google Cloud Speech-to-Text streaming recognition with wake word detection
-│   ├── text_to_ASL/
-│   │   └── translate_AI.py             # Gemini AI translation from English to ASL gloss
+│   │   ├── db_connection.py            # MongoDB connection initlization
+│   │   └── db_functions.py             # MongoDB database function/interaction
+│   └── speech_to_text/
+│       └── stt.py                      # Speech to text
+│   └── text_to_ASL/
+│       └── translate_AI.py             # AI text to ASL
+│   └── io/
+│       ├── ai_io.py                    # Thread translating lines to tokens
+│       ├── db_io.py                    # Thread retreiving motions from database with tokens
+│       ├── fileIO.py                   # File IO Manager
+│       ├── motion_io.py                # Thread handling sending motion signs
+│       └── stt_io.py                   # Thread handling STT 
 │   └── signs/
-│       ├── seed_signs.py               # Database seeding utility
-│       └── signs_to_seed.json          # ASL sign definitions (keyframes, durations, tokens)
-│
-├── docs/
-│   └── schemaExample.json              # Example sign schema documentation
-│
+│       ├── signs_to_seed.json          # All sign data json
+│       └── seed_signs.py               # MongoDB Seeder Script
+│  
 ├── README.md                           # Project overview and setup instructions
 ├── stt_key_file.json                   # Google Cloud credentials (not tracked in Git)
 ├── .env                                # Environment variables (not tracked in Git)
