@@ -1,0 +1,92 @@
+[
+  {
+    "token": "HELLO",
+    "type": "DYNAMIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [180, 0, 0, 0, 0] },
+      { "time": 1.0, "L": [180, 20, 20, 20, 20] },
+      { "time": 2.0, "L": [180, 0, 0, 0, 0] }
+    ]
+  },
+  {
+    "token": "THANKS",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [180, 15, 15, 15, 15] }
+    ]
+  },
+  {
+    "token": "YES",
+    "type": "DYNAMIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 180, 180, 180, 180] },
+      { "time": 1.0, "L": [0, 150, 150, 150, 150] },
+      { "time": 2.0, "L": [0, 180, 180, 180, 180] }
+    ]
+  },
+  {
+    "token": "NO",
+    "type": "DYNAMIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 120, 120, 0, 0] },
+      { "time": 1.0, "L": [0, 90, 90, 0, 0] },
+      { "time": 2.0, "L": [0, 120, 120, 0, 0] }
+    ]
+  },
+  {
+    "token": "LOVE",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 180, 180, 180, 180] }
+    ]
+  },
+  {
+    "token": "PLEASE",
+    "type": "DYNAMIC",
+    "duration": 2.5,
+    "keyframes": [
+      { "time": 0.0, "L": [180, 20, 20, 20, 20] },
+      { "time": 1.2, "L": [180, 25, 25, 25, 25] },
+      { "time": 2.5, "L": [180, 20, 20, 20, 20] }
+    ]
+  },
+  {
+    "token": "SORRY",
+    "type": "DYNAMIC",
+    "duration": 2.5,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 150, 150, 150, 150] },
+      { "time": 1.2, "L": [0, 100, 100, 100, 100] },
+      { "time": 2.5, "L": [0, 150, 150, 150, 150] }
+    ]
+  },
+  {
+    "token": "GOOD",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [180, 30, 30, 30, 30] }
+    ]
+  },
+  {
+    "token": "ME",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 100, 100, 100, 100] }
+    ]
+  },
+  {
+    "token": "YOU",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 20, 180, 180, 180] }
+    ]
+  }
+]
