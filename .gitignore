@@ -9,3 +9,5 @@ stt_key_file.json
 .vscode
 
 Credentials.txt
+
+/vosk/
