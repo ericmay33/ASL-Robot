@@ -7,3 +7,7 @@ stt_key_file.json
 
 .pio
 .vscode
+
+Credentials.txt
+
+**/vosk/

@@ -5,7 +5,7 @@
     "duration": 2.0,
     "keyframes": [
       { "time": 0.0, "L": [180, 0, 0, 0, 0] },
-      { "time": 1.0, "L": [180, 20, 20, 20, 20] },
+      { "time": 1.0, "L": [180, 60, 60, 60, 60] },
       { "time": 2.0, "L": [180, 0, 0, 0, 0] }
     ]
   },
@@ -23,7 +23,7 @@
     "duration": 2.0,
     "keyframes": [
       { "time": 0.0, "L": [0, 180, 180, 180, 180] },
-      { "time": 1.0, "L": [0, 150, 150, 150, 150] },
+      { "time": 1.0, "L": [0, 120, 120, 120, 120] },
       { "time": 2.0, "L": [0, 180, 180, 180, 180] }
     ]
   },
@@ -33,7 +33,7 @@
     "duration": 2.0,
     "keyframes": [
       { "time": 0.0, "L": [0, 120, 120, 0, 0] },
-      { "time": 1.0, "L": [0, 90, 90, 0, 0] },
+      { "time": 1.0, "L": [0, 60, 60, 0, 0] },
       { "time": 2.0, "L": [0, 120, 120, 0, 0] }
     ]
   },
@@ -51,7 +51,7 @@
     "duration": 2.5,
     "keyframes": [
       { "time": 0.0, "L": [180, 20, 20, 20, 20] },
-      { "time": 1.2, "L": [180, 25, 25, 25, 25] },
+      { "time": 1.2, "L": [180, 70, 70, 70, 70] },
       { "time": 2.5, "L": [180, 20, 20, 20, 20] }
     ]
   },
@@ -61,7 +61,7 @@
     "duration": 2.5,
     "keyframes": [
       { "time": 0.0, "L": [0, 150, 150, 150, 150] },
-      { "time": 1.2, "L": [0, 100, 100, 100, 100] },
+      { "time": 1.2, "L": [0, 80, 80, 80, 80] },
       { "time": 2.5, "L": [0, 150, 150, 150, 150] }
     ]
   },
@@ -72,7 +72,7 @@
     "keyframes": [
       { "time": 0.0, "L": [180, 30, 30, 30, 30] }
     ]
-  },
+  },                                                                                                                                         
   {
     "token": "ME",
     "type": "STATIC",
@@ -87,6 +87,823 @@
     "duration": 2.0,
     "keyframes": [
       { "time": 0.0, "L": [0, 20, 180, 180, 180] }
+    ]
+  },
+    {
+    "token": "HELP",
+    "type": "STATIC",
+    "duration": 2.5,
+    "keyframes": [
+      { "time": 0.0, "L": [180, 30, 30, 30, 30] }
+    ]
+  },
+  {
+    "token": "STOP",
+    "type": "STATIC",
+    "duration": 2.5,
+    "keyframes": [
+      { "time": 0.0, "L": [180, 0, 0, 0, 0] }
+    ]
+  },
+  {
+    "token": "WHAT",
+    "type": "DYNAMIC",
+    "duration": 2.5,
+    "keyframes": [
+      { "time": 0.0, "L": [180, 10, 10, 10, 10] },
+      { "time": 1.2, "L": [180, 60, 60, 60, 60] },
+      { "time": 2.5, "L": [180, 10, 10, 10, 10] }
+    ]
+  },
+  {
+    "token": "WHERE",
+    "type": "DYNAMIC",
+    "duration": 2.5,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 160, 180, 180, 180] },
+      { "time": 1.2, "L": [0, 100, 180, 180, 180] },
+      { "time": 2.5, "L": [0, 160, 180, 180, 180] }
+    ]
+  },
+  {
+    "token": "WHO",
+    "type": "DYNAMIC",
+    "duration": 2.5,
+    "keyframes": [
+      { "time": 0.0, "L": [180, 40, 60, 100, 120] },
+      { "time": 1.2, "L": [180, 90, 110, 100, 120] },
+      { "time": 2.5, "L": [180, 40, 60, 100, 120] }
+    ]
+  },
+  {
+    "token": "WHEN",
+    "type": "DYNAMIC",
+    "duration": 2.5,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 100, 140, 180, 180] },
+      { "time": 1.2, "L": [0, 160, 140, 180, 180] },
+      { "time": 2.5, "L": [0, 100, 140, 180, 180] }
+    ]
+  },
+  {
+    "token": "HOW",
+    "type": "DYNAMIC",
+    "duration": 2.5,
+    "keyframes": [
+      { "time": 0.0, "L": [180, 80, 90, 90, 90] },
+      { "time": 1.2, "L": [180, 40, 130, 90, 90] },
+      { "time": 2.5, "L": [180, 80, 90, 90, 90] }
+    ]
+  },
+  {
+    "token": "FINE",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [180, 10, 10, 10, 10] }
+    ]
+  },
+  {
+    "token": "NAME",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [180, 20, 20, 180, 180] }
+    ]
+  },
+  {
+    "token": "FRIEND",
+    "type": "STATIC",
+    "duration": 2.5,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 130, 130, 130, 130] }
+    ]
+  },
+  {
+    "token": "GOODBYE",
+    "type": "DYNAMIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [180, 0, 0, 0, 0] },
+      { "time": 1.0, "L": [180, 60, 60, 60, 60] },
+      { "time": 2.0, "L": [180, 0, 0, 0, 0] }
+    ]
+  },
+  {
+    "token": "MORNING",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 180, 180, 180, 180] }
+    ]
+  },
+  {
+    "token": "NIGHT",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 140, 140, 140, 140] }
+    ]
+  },
+  {
+    "token": "ONE",
+    "type": "STATIC",
+    "duration": 1.5,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 0, 180, 180, 180] }
+    ]
+  },
+  {
+    "token": "TWO",
+    "type": "STATIC",
+    "duration": 1.5,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 0, 0, 180, 180] }
+    ]
+  },
+  {
+    "token": "THREE",
+    "type": "STATIC",
+    "duration": 1.5,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 0, 0, 0, 180] }
+    ]
+  },
+  {
+    "token": "FOUR",
+    "type": "STATIC",
+    "duration": 1.5,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 0, 0, 0, 0] }
+    ]
+  },
+  {
+    "token": "FIVE",
+    "type": "STATIC",
+    "duration": 1.5,
+    "keyframes": [
+      { "time": 0.0, "L": [180, 180, 180, 180, 180] }
+    ]
+  },
+  {
+    "token": "WATER",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 40, 60, 80, 100] }
+    ]
+  },
+  {
+    "token": "FOOD",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 50, 50, 50, 50] }
+    ]
+  },
+  {
+    "token": "EAT",
+    "type": "DYNAMIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 80, 80, 80, 80] },
+      { "time": 1.0, "L": [0, 40, 40, 40, 40] },
+      { "time": 2.0, "L": [0, 80, 80, 80, 80] }
+    ]
+  },
+  {
+    "token": "DRINK",
+    "type": "DYNAMIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 90, 90, 90, 90] },
+      { "time": 1.0, "L": [0, 50, 50, 50, 50] },
+      { "time": 2.0, "L": [0, 90, 90, 90, 90] }
+    ]
+  },
+  {
+    "token": "SLEEP",
+    "type": "STATIC",
+    "duration": 2.5,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 120, 120, 120, 120] }
+    ]
+  },
+  {
+    "token": "WORK",
+    "type": "DYNAMIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [180, 0, 0, 0, 0] },
+      { "time": 0.5, "L": [180, 50, 50, 50, 50] },
+      { "time": 1.0, "L": [180, 0, 0, 0, 0] },
+      { "time": 1.5, "L": [180, 50, 50, 50, 50] },
+      { "time": 2.0, "L": [180, 0, 0, 0, 0] }
+    ]
+  },
+  {
+    "token": "HOME",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 100, 100, 100, 100] }
+    ]
+  },
+  {
+    "token": "SCHOOL",
+    "type": "DYNAMIC",
+    "duration": 2.5,
+    "keyframes": [
+      { "time": 0.0, "L": [180, 20, 20, 20, 20] },
+      { "time": 1.2, "L": [180, 70, 70, 70, 70] },
+      { "time": 2.5, "L": [180, 20, 20, 20, 20] }
+    ]
+  },
+  {
+    "token": "HAPPY",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 160, 160, 160, 160] }
+    ]
+  },
+  {
+    "token": "SAD",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 20, 20, 20, 20] }
+    ]
+  },
+  {
+    "token": "ANGRY",
+    "type": "DYNAMIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [180, 0, 0, 0, 0] },
+      { "time": 0.7, "L": [180, 50, 50, 50, 50] },
+      { "time": 1.4, "L": [180, 0, 0, 0, 0] },
+      { "time": 2.0, "L": [180, 50, 50, 50, 50] }
+    ]
+  },
+  {
+    "token": "EXCITED",
+    "type": "DYNAMIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [180, 180, 180, 180, 180] },
+      { "time": 0.5, "L": [180, 140, 140, 140, 140] },
+      { "time": 1.0, "L": [180, 180, 180, 180, 180] },
+      { "time": 1.5, "L": [180, 140, 140, 140, 140] },
+      { "time": 2.0, "L": [180, 180, 180, 180, 180] }
+    ]
+  },
+  {
+    "token": "TIRED",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 100, 100, 100, 100] }
+    ]
+  },
+  {
+    "token": "RED",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 30, 30, 30, 30] }
+    ]
+  },
+  {
+    "token": "BLUE",
+    "type": "DYNAMIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [180, 10, 10, 10, 10] },
+      { "time": 1.0, "L": [180, 60, 60, 60, 60] },
+      { "time": 2.0, "L": [180, 10, 10, 10, 10] }
+    ]
+  },
+  {
+    "token": "GREEN",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 60, 60, 60, 60] }
+    ]
+  },
+  {
+    "token": "YELLOW",
+    "type": "DYNAMIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 90, 90, 90, 90] },
+      { "time": 1.0, "L": [0, 140, 140, 140, 140] },
+      { "time": 2.0, "L": [0, 90, 90, 90, 90] }
+    ]
+  },
+  {
+    "token": "BLACK",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 50, 50, 50, 50] }
+    ]
+  },
+  {
+    "token": "WHITE",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 180, 180, 180, 180] }
+    ]
+  },
+  {
+    "token": "GO",
+    "type": "DYNAMIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 100, 100, 100, 100] },
+      { "time": 1.0, "L": [0, 150, 150, 150, 150] },
+      { "time": 2.0, "L": [0, 100, 100, 100, 100] }
+    ]
+  },
+  {
+    "token": "COME",
+    "type": "DYNAMIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 80, 80, 80, 80] },
+      { "time": 1.0, "L": [0, 40, 40, 40, 40] },
+      { "time": 2.0, "L": [0, 80, 80, 80, 80] }
+    ]
+  },
+  {
+    "token": "WALK",
+    "type": "DYNAMIC",
+    "duration": 2.5,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 140, 140, 140, 140] },
+      { "time": 0.6, "L": [0, 100, 100, 100, 100] },
+      { "time": 1.2, "L": [0, 140, 140, 140, 140] },
+      { "time": 1.8, "L": [0, 100, 100, 100, 100] },
+      { "time": 2.5, "L": [0, 140, 140, 140, 140] }
+    ]
+  },
+  {
+    "token": "RUN",
+    "type": "DYNAMIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 150, 150, 150, 150] },
+      { "time": 0.4, "L": [0, 110, 110, 110, 110] },
+      { "time": 0.8, "L": [0, 150, 150, 150, 150] },
+      { "time": 1.2, "L": [0, 110, 110, 110, 110] },
+      { "time": 1.6, "L": [0, 150, 150, 150, 150] },
+      { "time": 2.0, "L": [0, 110, 110, 110, 110] }
+    ]
+  },
+  {
+    "token": "SIT",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 110, 110, 110, 110] }
+    ]
+  },
+  {
+    "token": "STAND",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [180, 180, 180, 180, 180] }
+    ]
+  },
+  {
+    "token": "JUMP",
+    "type": "DYNAMIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 160, 160, 160, 160] },
+      { "time": 0.5, "L": [0, 120, 120, 120, 120] },
+      { "time": 1.0, "L": [0, 180, 180, 180, 180] },
+      { "time": 1.5, "L": [0, 120, 120, 120, 120] },
+      { "time": 2.0, "L": [0, 160, 160, 160, 160] }
+    ]
+  },
+  {
+    "token": "WHY",
+    "type": "DYNAMIC",
+    "duration": 2.5,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 100, 100, 100, 100] },
+      { "time": 1.2, "L": [0, 50, 50, 50, 50] },
+      { "time": 2.5, "L": [0, 100, 100, 100, 100] }
+    ]
+  },
+  {
+    "token": "MORE",
+    "type": "DYNAMIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 90, 90, 90, 90] },
+      { "time": 0.5, "L": [0, 50, 50, 50, 50] },
+      { "time": 1.0, "L": [0, 90, 90, 90, 90] },
+      { "time": 1.5, "L": [0, 50, 50, 50, 50] },
+      { "time": 2.0, "L": [0, 90, 90, 90, 90] }
+    ]
+  },
+  {
+    "token": "LESS",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 70, 70, 70, 70] }
+    ]
+  },
+  {
+    "token": "AGAIN",
+    "type": "DYNAMIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 100, 100, 100, 100] },
+      { "time": 1.0, "L": [0, 150, 150, 150, 150] },
+      { "time": 2.0, "L": [0, 100, 100, 100, 100] }
+    ]
+  },
+  {
+    "token": "DIFFERENT",
+    "type": "DYNAMIC",
+    "duration": 2.5,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 50, 50, 50, 50] },
+      { "time": 1.2, "L": [0, 100, 100, 100, 100] },
+      { "time": 2.5, "L": [0, 50, 50, 50, 50] }
+    ]
+  },
+  {
+    "token": "SAME",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 130, 130, 130, 130] }
+    ]
+  },
+  {
+    "token": "BIG",
+    "type": "DYNAMIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 180, 180, 180, 180] },
+      { "time": 1.0, "L": [0, 140, 140, 140, 140] },
+      { "time": 2.0, "L": [0, 180, 180, 180, 180] }
+    ]
+  },
+  {
+    "token": "SMALL",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 30, 30, 30, 30] }
+    ]
+  },
+  {
+    "token": "OLD",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 110, 110, 110, 110] }
+    ]
+  },
+  {
+    "token": "NEW",
+    "type": "DYNAMIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 70, 70, 70, 70] },
+      { "time": 1.0, "L": [0, 120, 120, 120, 120] },
+      { "time": 2.0, "L": [0, 70, 70, 70, 70] }
+    ]
+  },
+  {
+    "token": "TODAY",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 120, 120, 120, 120] }
+    ]
+  },
+  {
+    "token": "TOMORROW",
+    "type": "DYNAMIC",
+    "duration": 2.5,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 100, 100, 100, 100] },
+      { "time": 1.2, "L": [0, 160, 160, 160, 160] },
+      { "time": 2.5, "L": [0, 100, 100, 100, 100] }
+    ]
+  },
+  {
+    "token": "YESTERDAY",
+    "type": "DYNAMIC",
+    "duration": 2.5,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 140, 140, 140, 140] },
+      { "time": 1.2, "L": [0, 80, 80, 80, 80] },
+      { "time": 2.5, "L": [0, 140, 140, 140, 140] }
+    ]
+  },
+  {
+    "token": "NOW",
+    "type": "STATIC",
+    "duration": 1.5,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 90, 90, 90, 90] }
+    ]
+  },
+  {
+    "token": "LATER",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 80, 80, 80, 80] }
+    ]
+  },
+  {
+    "token": "MOTHER",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 60, 60, 60, 60] }
+    ]
+  },
+  {
+    "token": "FATHER",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 40, 40, 40, 40] }
+    ]
+  },
+  {
+    "token": "SISTER",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 70, 70, 70, 70] }
+    ]
+  },
+  {
+    "token": "BROTHER",
+    "type": "DYNAMIC",
+    "duration": 2.5,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 50, 50, 50, 50] },
+      { "time": 1.2, "L": [0, 110, 110, 110, 110] },
+      { "time": 2.5, "L": [0, 50, 50, 50, 50] }
+    ]
+  },
+  {
+    "token": "BABY",
+    "type": "DYNAMIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 100, 100, 100, 100] },
+      { "time": 1.0, "L": [0, 150, 150, 150, 150] },
+      { "time": 2.0, "L": [0, 100, 100, 100, 100] }
+    ]
+  },
+  {
+    "token": "FAMILY",
+    "type": "DYNAMIC",
+    "duration": 2.5,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 90, 90, 90, 90] },
+      { "time": 0.8, "L": [0, 140, 140, 140, 140] },
+      { "time": 1.6, "L": [0, 90, 90, 90, 90] },
+      { "time": 2.5, "L": [0, 140, 140, 140, 140] }
+    ]
+  },
+  {
+    "token": "HAND",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 150, 150, 150, 150] }
+    ]
+  },
+  {
+    "token": "FACE",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 180, 180, 180, 180] }
+    ]
+  },
+  {
+    "token": "EYE",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 20, 20, 20, 20] }
+    ]
+  },
+  {
+    "token": "EAR",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 30, 30, 30, 30] }
+    ]
+  },
+  {
+    "token": "DOG",
+    "type": "DYNAMIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 100, 100, 100, 100] },
+      { "time": 1.0, "L": [0, 50, 50, 50, 50] },
+      { "time": 2.0, "L": [0, 100, 100, 100, 100] }
+    ]
+  },
+  {
+    "token": "CAT",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 110, 110, 110, 110] }
+    ]
+  },
+  {
+    "token": "BOOK",
+    "type": "DYNAMIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [180, 0, 0, 0, 0] },
+      { "time": 1.0, "L": [180, 60, 60, 60, 60] },
+      { "time": 2.0, "L": [180, 0, 0, 0, 0] }
+    ]
+  },
+  {
+    "token": "READ",
+    "type": "DYNAMIC",
+    "duration": 2.5,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 50, 50, 50, 50] },
+      { "time": 1.2, "L": [0, 100, 100, 100, 100] },
+      { "time": 2.5, "L": [0, 50, 50, 50, 50] }
+    ]
+  },
+  {
+    "token": "WRITE",
+    "type": "DYNAMIC",
+    "duration": 2.5,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 40, 40, 40, 40] },
+      { "time": 0.6, "L": [0, 90, 90, 90, 90] },
+      { "time": 1.2, "L": [0, 40, 40, 40, 40] },
+      { "time": 1.8, "L": [0, 90, 90, 90, 90] },
+      { "time": 2.5, "L": [0, 40, 40, 40, 40] }
+    ]
+  },
+  {
+    "token": "LEARN",
+    "type": "DYNAMIC",
+    "duration": 2.5,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 80, 80, 80, 80] },
+      { "time": 1.2, "L": [0, 130, 130, 130, 130] },
+      { "time": 2.5, "L": [0, 80, 80, 80, 80] }
+    ]
+  },
+  {
+    "token": "TEACH",
+    "type": "DYNAMIC",
+    "duration": 2.5,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 90, 90, 90, 90] },
+      { "time": 1.2, "L": [0, 50, 50, 50, 50] },
+      { "time": 2.5, "L": [0, 90, 90, 90, 90] }
+    ]
+  },
+  {
+    "token": "PLAY",
+    "type": "DYNAMIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 120, 120, 120, 120] },
+      { "time": 0.5, "L": [0, 160, 160, 160, 160] },
+      { "time": 1.0, "L": [0, 120, 120, 120, 120] },
+      { "time": 1.5, "L": [0, 160, 160, 160, 160] },
+      { "time": 2.0, "L": [0, 120, 120, 120, 120] }
+    ]
+  },
+  {
+    "token": "MUSIC",
+    "type": "DYNAMIC",
+    "duration": 2.5,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 100, 100, 100, 100] },
+      { "time": 0.8, "L": [0, 150, 150, 150, 150] },
+      { "time": 1.6, "L": [0, 100, 100, 100, 100] },
+      { "time": 2.5, "L": [0, 150, 150, 150, 150] }
+    ]
+  },
+  {
+    "token": "DANCE",
+    "type": "DYNAMIC",
+    "duration": 2.5,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 130, 130, 130, 130] },
+      { "time": 0.5, "L": [0, 90, 90, 90, 90] },
+      { "time": 1.0, "L": [0, 170, 170, 170, 170] },
+      { "time": 1.5, "L": [0, 90, 90, 90, 90] },
+      { "time": 2.0, "L": [0, 130, 130, 130, 130] },
+      { "time": 2.5, "L": [0, 90, 90, 90, 90] }
+    ]
+  },
+  {
+    "token": "WAIT",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 85, 85, 85, 85] }
+    ]
+  },
+  {
+    "token": "READY",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 95, 95, 95, 95] }
+    ]
+  },
+  {
+    "token": "START",
+    "type": "DYNAMIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 100, 100, 100, 100] },
+      { "time": 1.0, "L": [0, 150, 150, 150, 150] },
+      { "time": 2.0, "L": [0, 100, 100, 100, 100] }
+    ]
+  },
+  {
+    "token": "FINISH",
+    "type": "DYNAMIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 110, 110, 110, 110] },
+      { "time": 1.0, "L": [0, 60, 60, 60, 60] },
+      { "time": 2.0, "L": [0, 110, 110, 110, 110] }
+    ]
+  },
+  {
+    "token": "UNDERSTAND",
+    "type": "DYNAMIC",
+    "duration": 2.5,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 75, 75, 75, 75] },
+      { "time": 1.2, "L": [0, 125, 125, 125, 125] },
+      { "time": 2.5, "L": [0, 75, 75, 75, 75] }
+    ]
+  },
+  {
+    "token": "KNOW",
+    "type": "STATIC",
+    "duration": 2.0,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 65, 65, 65, 65] }
+    ]
+  },
+  {
+    "token": "THINK",
+    "type": "DYNAMIC",
+    "duration": 2.5,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 55, 55, 55, 55] },
+      { "time": 1.2, "L": [0, 105, 105, 105, 105] },
+      { "time": 2.5, "L": [0, 55, 55, 55, 55] }
+    ]
+  },
+  {
+    "token": "REMEMBER",
+    "type": "DYNAMIC",
+    "duration": 2.5,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 70, 70, 70, 70] },
+      { "time": 1.2, "L": [0, 120, 120, 120, 120] },
+      { "time": 2.5, "L": [0, 70, 70, 70, 70] }
+    ]
+  },
+  {
+    "token": "FORGET",
+    "type": "DYNAMIC",
+    "duration": 2.5,
+    "keyframes": [
+      { "time": 0.0, "L": [0, 80, 80, 80, 80] },
+      { "time": 1.2, "L": [0, 40, 40, 40, 40] },
+      { "time": 2.5, "L": [0, 80, 80, 80, 80] }
     ]
   }
 ]

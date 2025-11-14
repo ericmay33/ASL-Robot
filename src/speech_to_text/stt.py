@@ -48,6 +48,9 @@ def listen():
 
     responses = client.streaming_recognize(streaming_config, mic_audio_stream())
     trans_begun = False
+    
+    wake_phrases = ["fred", "frederick", "freddy", "freddie", "hey fred", "fred please translate"]
+    stop_phrases = ["stop moving", "fred stop", "thank you fred"]
 
     for response in responses:
         for result in response.results:
@@ -57,14 +60,17 @@ def listen():
             transcript = result.alternatives[0].transcript.lower().strip()
 
             if result.is_final:
-                if "start moving" in transcript and not trans_begun:
+                # === Wake detection ===
+                if any(phrase in transcript for phrase in wake_phrases) and not trans_begun:
                     trans_begun = True
-                    print("\nTransmission Begun")
+                    print(f"\n[FRED]Activated! Listening for speech...\n")
 
-                elif "stop moving" in transcript and trans_begun:
-                    print("Transmission Ended. Exiting")
-                    return  # gracefully end the generator
+                # === Stop detection ===
+                elif any(phrase in transcript for phrase in stop_phrases) and trans_begun:
+                    print("[FRED] Stopping translation. Goodbye!")
+                    return  # Gracefully stop listening
 
+                # === Regular speech while active ===
                 elif trans_begun:
-                    print("Final transcript:", transcript)
+                    print(f"[FRED heard]: {transcript}")
                     yield transcript

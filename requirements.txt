@@ -5,3 +5,4 @@ google-auth
 pyaudio
 google-genai
 pyserial
+sounddevice

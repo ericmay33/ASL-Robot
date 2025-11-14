@@ -25,6 +25,3 @@ if __name__ == "__main__":
     ai_thread.join()
     db_thread.join()
     motion_thread.join()
-    
-    
-    ## Close everything properly on exit (not reached in current setup) ##
