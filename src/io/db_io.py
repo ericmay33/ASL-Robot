@@ -1,6 +1,37 @@
 from src.database.db_connection import DatabaseConnection
 from src.database.db_functions import get_sign_by_token
+from src.cache.fingerspelling_cache import get_letter_motion
 import time
+
+# will fill with motion scripts for letters when hardware for hand supports signs
+FINGERSPELL_CACHE = {
+    "A": None,
+    "B": None,
+    "C": None,
+    "D": None,
+    "E": None,
+    "F": None,
+    "G": None,
+    "H": None,
+    "I": None,
+    "J": None,
+    "K": None,
+    "L": None,
+    "M": None,
+    "N": None,
+    "O": None,
+    "P": None,
+    "Q": None,
+    "R": None,
+    "S": None,
+    "T": None,
+    "U": None,
+    "V": None,
+    "W": None,
+    "X": None,
+    "Y": None,
+    "Z": None,
+}
 
 def run_database(file_io):
     DatabaseConnection.initialize()
@@ -14,13 +45,23 @@ def run_database(file_io):
         while not file_io.asl_token_queue.empty():
             token = file_io.pop_asl_token()
             sign_data = get_sign_by_token(token)
+
             if sign_data:
                 file_io.push_motion_script(sign_data)
-                print(f"[DB_IO] Retrieved sign for token: {token}")
-            else:
-                # LOG WORDS NOT FOUND IN DATABASE FOR DEBUGGING
-                print(f"[DB_IO] Token '{token}' not found in database.")
-        
+                print(f"[DB_IO] Retrieved sign for {token}")
+                continue
+
+            # If not in DB → fallback to fingerspelling
+            print(f"[DB_IO] Token '{token}' not in DB. Using fallback.")
+
+            for char in token:
+                motion = get_letter_motion(char)
+                if motion:
+                    file_io.push_motion_script(motion)
+                    print(f"[DB_IO] Queued letter '{char}' from fallback cache.")
+                else:
+                    print(f"[DB_IO] Letter '{char}' not available.")
+
         # Reset event after processing all tokens
         file_io.asl_new_signal.clear()
 
