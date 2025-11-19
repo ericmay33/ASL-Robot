@@ -3,36 +3,6 @@ from src.database.db_functions import get_sign_by_token
 from src.cache.fingerspelling_cache import get_letter_motion
 import time
 
-# will fill with motion scripts for letters when hardware for hand supports signs
-FINGERSPELL_CACHE = {
-    "A": None,
-    "B": None,
-    "C": None,
-    "D": None,
-    "E": None,
-    "F": None,
-    "G": None,
-    "H": None,
-    "I": None,
-    "J": None,
-    "K": None,
-    "L": None,
-    "M": None,
-    "N": None,
-    "O": None,
-    "P": None,
-    "Q": None,
-    "R": None,
-    "S": None,
-    "T": None,
-    "U": None,
-    "V": None,
-    "W": None,
-    "X": None,
-    "Y": None,
-    "Z": None,
-}
-
 def run_database(file_io):
     DatabaseConnection.initialize()
     print("[DB_IO] Started database I/O handler loop.")
