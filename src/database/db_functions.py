@@ -18,3 +18,8 @@ def delete_sign_by_token(token: str):
     collection = DatabaseConnection.get_collection()
     result = collection.delete_one({"token": token.upper()})
     return result.deleted_count
+
+# Get all signs in the DB
+def get_all_signs():
+    collection = DatabaseConnection.get_collection()
+    return list(collection.find({}))
