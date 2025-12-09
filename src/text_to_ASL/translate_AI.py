@@ -37,7 +37,7 @@ def translate_to_asl_gloss(text: str) -> list[str]:
         # Post-processing to ensure ALL CAPS and space separation
         tokens = gloss_text.strip().upper().split()
         
-        print(f"[AI] Translation successful: {tokens}")
+        # print(f"[AI] Translation successful: {tokens}") # DEBUG
         
         # Cleaning tokens
         questionWords = {"WHO", "WHAT", "WHEN", "WHERE", "WHY", "HOW"}

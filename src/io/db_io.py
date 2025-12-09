@@ -1,5 +1,6 @@
 from src.database.db_connection import DatabaseConnection
-from src.database.db_functions import get_sign_by_token, get_all_signs
+from src.database.db_functions import get_sign_by_token
+from src.cache.fingerspelling_cache import get_letter_motion
 import time
 
 #configs
@@ -17,29 +18,23 @@ def run_database(file_io):
         while not file_io.asl_token_queue.empty():
             token = file_io.pop_asl_token()
             sign_data = get_sign_by_token(token)
+
             if sign_data:
                 file_io.push_motion_script(sign_data)
-                print(f"[DB_IO] Retrieved sign for token: {token}")
-            else:
-                # Word not in DB
-                print(f"[DB_IO] Token '{token}' not found in database.")
-                
-                # log missing token to tokens_to_add.txt for later addition
-                lines = open(NONEXIST_TOKENS_FILE).read().splitlines()
-                lines.append(token)
-                lines.sort()
-                open(NONEXIST_TOKENS_FILE, "w").write("\n".join(lines))
-                
-                # finger spell the missing token
-                for char in token:
-                    sign_data = get_sign_by_token(char)
-                    if sign_data:
-                        file_io.push_motion_script(sign_data)
-                        print(f"[DB_IO] Finger spelling character: {char}")
-                    else:
-                        print(f"[DB_IO] Character '{char}' not found in database for finger spelling.")
-        
-        
+                print(f"[DB_IO] Retrieved sign for {token}")
+                continue
+
+            # If not in DB → fallback to fingerspelling
+            print(f"[DB_IO] Token '{token}' not in DB. Using fallback.")
+
+            for char in token:
+                motion = get_letter_motion(char)
+                if motion:
+                    file_io.push_motion_script(motion)
+                    print(f"[DB_IO] Queued letter '{char}' from fallback cache.")
+                else:
+                    print(f"[DB_IO] Letter '{char}' not available.")
+
         # Reset event after processing all tokens
         file_io.asl_new_signal.clear()
 
