@@ -53,13 +53,10 @@ def run_motion(file_io, left_port="/dev/cu.usbserial-11240", right_port="/dev/cu
     ser_right = connect_serial(right_port, baud, "RIGHT")
     
     if ser_left is None and ser_right is None:
-        print(f"[MOTION_IO] ❌ FATAL: Could not connect to any controller!")
-        print(f"[MOTION_IO] Please check:")
+        print(f"[MOTION_IO] ⚠ No controllers connected. Will continue without hardware.")
+        print(f"[MOTION_IO] To connect controllers, ensure they're plugged in and ports are correct:")
         print(f"  - LEFT port: {left_port}")
         print(f"  - RIGHT port: {right_port}")
-        print(f"  - Ensure ESP32 boards are connected and powered")
-        print(f"  - Check if ports are already in use by another program")
-        return
 
     def json_default(obj):
         if isinstance(obj, ObjectId):
@@ -68,7 +65,36 @@ def run_motion(file_io, left_port="/dev/cu.usbserial-11240", right_port="/dev/cu
 
     print("[MOTION_IO] Started motion execution loop.")
 
+    # Track last reconnection attempt to avoid spam
+    last_reconnect_left = 0
+    last_reconnect_right = 0
+    reconnect_interval = 5.0  # Only try reconnecting every 5 seconds
+
+    def read_arduino_messages(ser, name):
+        """Non-blocking read of Arduino debug messages"""
+        if not is_serial_valid(ser):
+            return
+        try:
+            while ser.in_waiting > 0:
+                line = ser.readline().decode(errors="ignore").strip()
+                if line:
+                    if line == "ACK":
+                        # ACK is handled separately if needed
+                        pass
+                    else:
+                        print(f"[DEBUG] {name} Arduino: {line}")
+        except (OSError, serial.SerialException) as e:
+            # Device disconnected - this is expected, don't spam
+            pass
+        except Exception as e:
+            # Other errors - log occasionally
+            pass
+
     while True:
+        # Check for Arduino messages periodically (non-blocking)
+        read_arduino_messages(ser_left, "LEFT")
+        read_arduino_messages(ser_right, "RIGHT")
+        
         file_io.motion_new_signal.wait()
 
         # Pop all motion scripts from the queue
@@ -77,90 +103,71 @@ def run_motion(file_io, left_port="/dev/cu.usbserial-11240", right_port="/dev/cu
             payload = json.dumps(script, default=json_default) + "\n"
             payload_bytes = payload.encode("utf-8")
 
-            # Send to both controllers simultaneously
-            left_sent = False
-            right_sent = False
+            current_time = time.time()
+            
+            # Debug: Check queue size
+            queue_size = file_io.motion_queue.qsize()
+            if queue_size > 0:
+                print(f"[DEBUG] Motion queue has {queue_size} remaining items")
             
             # Try to send to left controller
             if is_serial_valid(ser_left):
                 try:
                     ser_left.write(payload_bytes)
                     ser_left.flush()
-                    left_sent = True
-                    print(f"[EXEC] Sent {script['token']} to LEFT controller.")
+                    print(f"[EXEC] Sent {script['token']} to LEFT controller (duration: {script.get('duration', '?')}s).")
+                    
+                    # Check for immediate response
+                    time.sleep(0.1)  # Small delay to let Arduino process
+                    read_arduino_messages(ser_left, "LEFT")
+                    
                 except (serial.SerialException, OSError) as e:
+                    # Connection lost - show error and mark for reconnection
                     print(f"[ERROR] Failed to send to LEFT controller: {e}")
-                    print(f"[MOTION_IO] Attempting to reconnect LEFT controller...")
                     try:
-                        if ser_left:
-                            ser_left.close()
+                        ser_left.close()
                     except:
                         pass
-                    ser_left = connect_serial(left_port, baud, "LEFT")
+                    ser_left = None
+                    last_reconnect_left = current_time
             elif ser_left is None:
-                # Try to reconnect if we haven't tried recently
-                ser_left = connect_serial(left_port, baud, "LEFT")
+                # Only try reconnecting if enough time has passed
+                if (current_time - last_reconnect_left) >= reconnect_interval:
+                    ser_left = connect_serial(left_port, baud, "LEFT")
+                    if ser_left is None:
+                        last_reconnect_left = current_time
             
             # Try to send to right controller
             if is_serial_valid(ser_right):
                 try:
                     ser_right.write(payload_bytes)
                     ser_right.flush()
-                    right_sent = True
-                    print(f"[EXEC] Sent {script['token']} to RIGHT controller.")
+                    print(f"[EXEC] Sent {script['token']} to RIGHT controller (duration: {script.get('duration', '?')}s).")
+                    
+                    # Check for immediate response
+                    time.sleep(0.1)  # Small delay to let Arduino process
+                    read_arduino_messages(ser_right, "RIGHT")
+                    
                 except (serial.SerialException, OSError) as e:
+                    # Connection lost - show error and mark for reconnection
                     print(f"[ERROR] Failed to send to RIGHT controller: {e}")
-                    print(f"[MOTION_IO] Attempting to reconnect RIGHT controller...")
                     try:
-                        if ser_right:
-                            ser_right.close()
+                        ser_right.close()
                     except:
                         pass
-                    ser_right = connect_serial(right_port, baud, "RIGHT")
+                    ser_right = None
+                    last_reconnect_right = current_time
             elif ser_right is None:
-                # Try to reconnect if we haven't tried recently
-                ser_right = connect_serial(right_port, baud, "RIGHT")
-
-            # Wait for ACKs from both controllers (only if we sent to them)
-            left_acked = not left_sent or ser_left is None
-            right_acked = not right_sent or ser_right is None
+                # Only try reconnecting if enough time has passed
+                if (current_time - last_reconnect_right) >= reconnect_interval:
+                    ser_right = connect_serial(right_port, baud, "RIGHT")
+                    if ser_right is None:
+                        last_reconnect_right = current_time
             
-            while not left_acked or not right_acked:
-                # Check left controller
-                if is_serial_valid(ser_left) and not left_acked:
-                    try:
-                        if ser_left.in_waiting > 0:
-                            ack = ser_left.readline().decode(errors="ignore").strip()
-                            if ack == "ACK":
-                                print(f"[EXEC] LEFT controller: {script['token']} executed successfully.")
-                                left_acked = True
-                            elif ack != "":
-                                print(f"[DEBUG] LEFT Arduino: {ack}")
-                    except Exception as e:
-                        print(f"[ERROR] Error reading from LEFT controller: {e}")
-                elif not left_acked and not left_sent:
-                    # If we didn't send, consider it acked
-                    left_acked = True
-                
-                # Check right controller
-                if is_serial_valid(ser_right) and not right_acked:
-                    try:
-                        if ser_right.in_waiting > 0:
-                            ack = ser_right.readline().decode(errors="ignore").strip()
-                            if ack == "ACK":
-                                print(f"[EXEC] RIGHT controller: {script['token']} executed successfully.")
-                                right_acked = True
-                            elif ack != "":
-                                print(f"[DEBUG] RIGHT Arduino: {ack}")
-                    except Exception as e:
-                        print(f"[ERROR] Error reading from RIGHT controller: {e}")
-                elif not right_acked and not right_sent:
-                    # If we didn't send, consider it acked
-                    right_acked = True
-                
-                # Small delay to avoid busy waiting
-                if not left_acked or not right_acked:
-                    time.sleep(0.01)
+            # Add a small delay before processing next command to prevent queue overflow
+            # This gives the Arduino time to start processing before we send the next command
+            sign_duration = script.get('duration', 2.0)
+            time.sleep(min(0.2, sign_duration * 0.1))  # Small delay, max 200ms
 
             # Clear event if no motions left
             if file_io.motion_queue.empty():
