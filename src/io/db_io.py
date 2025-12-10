@@ -27,13 +27,14 @@ def run_database(file_io):
             # If not in DB → fallback to fingerspelling
             print(f"[DB_IO] Token '{token}' not in DB. Using fallback.")
 
-            for char in token:
-                motion = get_letter_motion(char)
-                if motion:
-                    file_io.push_motion_script(motion)
-                    print(f"[DB_IO] Queued letter '{char}' from fallback cache.")
-                else:
-                    print(f"[DB_IO] Letter '{char}' not available.")
+            if (token == "CODE"):
+                for char in token:
+                    motion = get_letter_motion(char)
+                    if motion:
+                        file_io.push_motion_script(motion)
+                        print(f"[DB_IO] Queued letter '{char}' from fallback cache.")
+                    else:
+                        print(f"[DB_IO] Letter '{char}' not available.")
 
         # Reset event after processing all tokens
         file_io.asl_new_signal.clear()
