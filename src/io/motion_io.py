@@ -47,7 +47,7 @@ def is_serial_valid(ser):
     except:
         return False
 
-def run_motion(file_io, left_port="/dev/cu.usbserial-11240", right_port="/dev/cu.usbserial-11230", baud=115200):
+def run_motion(file_io, left_port="COM3", right_port="COM6", baud=115200):
     # Connect to both controllers
     ser_left = connect_serial(left_port, baud, "LEFT")
     ser_right = connect_serial(right_port, baud, "RIGHT")

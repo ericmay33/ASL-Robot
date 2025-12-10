@@ -6,3 +6,5 @@ pyaudio
 google-genai
 pyserial
 sounddevice
+torch
+transformers
