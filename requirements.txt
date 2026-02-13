@@ -8,3 +8,6 @@ pyserial
 sounddevice
 torch
 transformers
+openai-whisper
+torchaudio
+numpy
