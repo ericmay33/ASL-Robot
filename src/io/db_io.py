@@ -24,17 +24,25 @@ def run_database(file_io):
                 print(f"[DB_IO] Retrieved sign for {token}")
                 continue
 
-            # If not in DB → fallback to fingerspelling
-            print(f"[DB_IO] Token '{token}' not in DB. Using fallback.")
-
-            if (token == "CODE"):
-                for char in token:
-                    motion = get_letter_motion(char)
-                    if motion:
-                        file_io.push_motion_script(motion)
-                        print(f"[DB_IO] Queued letter '{char}' from fallback cache.")
-                    else:
-                        print(f"[DB_IO] Letter '{char}' not available.")
+            # If not in DB → fallback to fingerspelling (any unknown word)
+            print(f"[DB_IO] Token '{token}' not in DB. Fallback fingerspelling.")
+            token_str = (token or "").strip()
+            if not token_str:
+                continue
+            # Normalize to uppercase for letter lookup (cache uses uppercase keys)
+            token_upper = token_str.upper()
+            queued = 0
+            for char in token_upper:
+                motion = get_letter_motion(char)
+                if motion:
+                    file_io.push_motion_script(motion)
+                    queued += 1
+                    print(f"[DB_IO] Queued letter '{char}' (fallback fingerspelling).")
+                else:
+                    # Skip characters with no motion: digits, punctuation, spaces, unsupported letters
+                    print(f"[DB_IO] Skipped '{char}' (no fingerspelling motion available).")
+            if queued:
+                print(f"[DB_IO] Fallback fingerspelling: '{token_str}' -> {queued} letter(s) queued.")
 
         # Reset event after processing all tokens
         file_io.asl_new_signal.clear()

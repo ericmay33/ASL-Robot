@@ -36,23 +36,25 @@ class Settings:
 
     def validate(self):
         missing = []
-        
+        stt_engine = os.getenv("STT_ENGINE", "cloud").lower().strip()
+
         if not self.MONGODB_URI:
             missing.append("MONGODB_URI")
         if not self.MONGODB_DB_NAME:
             missing.append("MONGODB_DB_NAME")
-            
-        if not self.GOOGLE_CREDS_PATH:
-            missing.append("GOOGLE_APPLICATION_CREDENTIALS (Path not set)")
-        elif not os.path.exists(self.GOOGLE_CREDS_PATH):
-            print(f"Warning: Google Credentials file not found at {self.GOOGLE_CREDS_PATH}")
-            missing.append("Google Credentials file not found.")
-        elif not self.GOOGLE_CREDENTIALS:
-            missing.append("Google Credentials file could not be parsed as JSON.")
-            
+
+        if stt_engine == "cloud":
+            if not self.GOOGLE_CREDS_PATH:
+                missing.append("GOOGLE_APPLICATION_CREDENTIALS (Path not set)")
+            elif not os.path.exists(self.GOOGLE_CREDS_PATH):
+                print(f"Warning: Google Credentials file not found at {self.GOOGLE_CREDS_PATH}")
+                missing.append("Google Credentials file not found.")
+            elif not self.GOOGLE_CREDENTIALS:
+                missing.append("Google Credentials file could not be parsed as JSON.")
+
         if not self.GEMINI_API_KEY:
             missing.append("GEMINI_API_KEY")
-            
+
         if missing:
             raise ValueError(f"Missing environment variables/invalid configuration: {', '.join(missing)}")
 
