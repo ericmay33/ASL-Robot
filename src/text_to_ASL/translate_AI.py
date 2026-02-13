@@ -11,6 +11,37 @@ HF_MODEL = AutoModelForSeq2SeqLM.from_pretrained(MODEL_NAME_HF)
 # client = ollama.Client() 
 # MODEL_NAME = "mistral:7b" 
 
+def phrase_find(tokens: list[str]) -> list[str]:
+    i = 0
+    new_tokens = []
+    
+    GLOSS_PHRASE_MAP = {
+        ("WALK", "ON", "EGGSHELL"): "ACT-CAREFUL",
+        ("WALK", "ON", "EGGSHELLS"): "ACT-CAREFUL",
+        ("VERY", "BIG"): "HUGE",
+        ("VERY", "SMALL"): "TINY",
+        ("KICK", "BUCKET"): "DIE",
+        ("PIECE", "CAKE"): "EASY"
+    }
+    
+    while i < len(tokens):
+        match_found = False
+        # Check for phrase lengths from longest (3) to shortest (2)
+        for phrase_length in [3, 2]:
+            if i + phrase_length <= len(tokens):
+                window = tuple(tokens[i : i + phrase_length])
+                if window in GLOSS_PHRASE_MAP:
+                    new_tokens.append(GLOSS_PHRASE_MAP[window])
+                    i += phrase_length
+                    match_found = True
+                    break
+        
+        if not match_found:
+            new_tokens.append(tokens[i])
+            i += 1
+            
+    return new_tokens
+
 def translate_to_asl_gloss(text: str) -> list[str]:
     # This specialized model does not need the aggressive system prompt
     if not text.strip():
@@ -41,17 +72,32 @@ def translate_to_asl_gloss(text: str) -> list[str]:
         
         # Cleaning tokens
         questionWords = {"WHO", "WHAT", "WHEN", "WHERE", "WHY", "HOW"}
-        removeWords = {"BE"}
+        removeWords = {"BE", "POSS"}
         removeExtensions = {"DESC-", "X-"}
+        number_map = {
+            "0": "ZERO", "1": "ONE", "2": "TWO", "3": "THREE", "4": "FOUR",
+            "5": "FIVE", "6": "SIX", "7": "SEVEN", "8": "EIGHT", "9": "NINE",
+            "10": "TEN"
+        }
+        word_map = {"MY": "ME", "YOUR": "YOU", "X-I" : "ME"}
         
         # 1. Remove unecessary words
         cleaned = [t for t in tokens if t not in removeWords]
 
-        # 2. Remove extensions
+        # 2. Replace numbers
+        cleaned = [number_map.get(t, t) for t in cleaned]
+        
+        # 3. Replace words
+        cleaned = [word_map.get(t, t) for t in cleaned]
+        
+        # 4. Remove extensions
         for ext in removeExtensions:
             cleaned = [t.replace(ext, "") for t in cleaned]
+        
+        #5. Find phrases and replace
+        cleaned = phrase_find(cleaned)
 
-        # 3. Move questions words to the end
+        # 5. Move questions words to the end
         wh_words = [t for t in cleaned if t in questionWords]
         body = [t for t in cleaned if t not in questionWords]
         if wh_words:

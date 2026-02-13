@@ -7,7 +7,7 @@ def seed_signs(reset=False):
     DatabaseConnection.initialize()
     collection = DatabaseConnection.get_collection()
 
-    with open("src/signs/signs_to_seed.json", "r") as f:
+    with open("src/signs/signs_to_seed_refresh.json", "r") as f:
         signs = json.load(f)
 
     if reset:
