@@ -186,11 +186,9 @@ python -c "from src.signs.seed_signs import seed_signs; seed_signs(reset=True)"
 
 ### Serial Port Configuration
 
-The motion I/O handler connects to the Arduino via serial. By default, it uses `/dev/cu.usbmodem1201` on macOS. To change the port, modify the `port` parameter in `src/io/motion_io.py`:
+The motion I/O handler connects to left and right Arduino controllers via serial (default: `COM3`, `COM6` on Windows; adjust in `src/io/motion_io.py`). Keyframes are sent as a JSON array for Arduino compatibility. **Sprint 6:** Graceful shutdown on Ctrl+C; inactive arm returns to rest when switching to one-arm (e.g. fingerspelling); keyframes fix and code cleanup.
 
-```python
-def run_motion(file_io, port="/dev/cu.usbmodem1201", baud=115200):
-```
+Ports are set in `src/io/motion_io.py`: `run_motion(file_io, left_port="COM3", right_port="COM6", baud=115200)`.
 
 **Finding your serial port:**
 - **macOS/Linux**: `ls /dev/cu.*` or `ls /dev/tty.*`
@@ -215,6 +213,7 @@ The system will:
 - Speak your sentence
 - The robot will translate and sign your words
 - Say "stop moving" or "fred stop" to deactivate
+- **Ctrl+C** exits cleanly (graceful shutdown: threads stop, serial ports close)
 
 ## 📊 Sign Data Schema
 
