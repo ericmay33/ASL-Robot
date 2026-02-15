@@ -127,7 +127,7 @@ LOCAL_STT_DEVICE=cpu  # 'cpu' or 'cuda' (if using local)
 
 **Implementation**: The `motion_io.py` thread is the bridge between the software and the physical hardware. It establishes and manages serial connections to two separate Arduino controllers (one for each arm, using ports like `COM3` and `COM6`).
 
-**Recent Improvements (Sprint 5)**:
+**Recent improvements (Sprint 5–6)**:
 
 #### ACK-Based Synchronization
 - Python waits for Arduino to send "ACK" message before sending next command
@@ -148,6 +148,8 @@ LOCAL_STT_DEVICE=cpu  # 'cpu' or 'cuda' (if using local)
 - Right-only signs → sent only to right controller  
 - Two-handed signs → sent to both controllers
 - 50% reduction in serial traffic for single-arm motions
+
+**Sprint 6**: Graceful shutdown on Ctrl+C (shutdown event, serial cleanup); rest position for inactive arm when switching context; keyframes always sent as array for Arduino compatibility; motion I/O refactored with shared send helper and general code cleanup.
 
 **Functionality**: 
 - Polls for motion scripts from the database output queue
@@ -366,9 +368,9 @@ python -m src.testing.test_stt local
 
 ---
 
-## 9. Recent Improvements (Sprint 5)
+## 9. Recent Improvements
 
-### Motion Pipeline Enhancements
+### Sprint 5 – Motion Pipeline Enhancements
 
 1. **ACK-Based Synchronization** - Eliminated fixed delays, prevents queue overflow
 2. **Smart Fingerspelling Delays** - 30ms between letters, 150ms between signs
@@ -376,13 +378,14 @@ python -m src.testing.test_stt local
 4. **Generalized Fingerspelling Fallback** - Any unknown word automatically fingerspelled
 5. **Dual-Mode STT** - Choice between cloud (Google) or local (Whisper) speech recognition
 
-### Performance Improvements
+**Performance**: ~25% faster execution, ~43% faster fingerspelling, 50% reduction in serial traffic for single-arm motions, 100% elimination of buffer overflow issues.
 
-- **25% faster** overall execution
-- **43% faster** fingerspelling (smooth letter flow)
-- **50% reduction** in serial traffic for single-arm motions
-- **100% elimination** of buffer overflow issues
-- **Lower latency** with local STT (no network delay)
+### Sprint 6 – Stability, UX & Cleanup
+
+1. **Graceful shutdown** – Ctrl+C exits cleanly: shutdown event signals worker threads (AI, DB, Motion), serial ports are closed, and the process exits without force-kill.
+2. **Rest position** – When switching context (e.g. two-arm sign → fingerspelling with one arm), the inactive arm is sent a neutral rest pose so it no longer stays frozen in the previous sign.
+3. **Keyframes compatibility** – Python normalizes `keyframes` to a JSON array before sending over serial so Arduino always receives an array (fixes dict vs. array mismatch from some DB paths).
+4. **Code cleanup** – ACK/send logic in `motion_io.py` extracted into a shared helper; unused imports and dead code removed; debug prints reduced; readability improved.
 
 ---
 

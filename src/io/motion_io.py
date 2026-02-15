@@ -88,7 +88,7 @@ def get_arms_for_script(script):
         return True, True
     return send_to_left, send_to_right
 
-def run_motion(file_io, left_port="COM4", right_port="COM6", baud=115200):
+def run_motion(file_io, left_port="COM3", right_port="COM6", baud=115200):
     # Connect to both controllers
     ser_left = connect_serial(left_port, baud, "LEFT")
     ser_right = connect_serial(right_port, baud, "RIGHT")
@@ -98,6 +98,31 @@ def run_motion(file_io, left_port="COM4", right_port="COM6", baud=115200):
         print(f"[MOTION_IO] To connect controllers, ensure they're plugged in and ports are correct:")
         print(f"  - LEFT port: {left_port}")
         print(f"  - RIGHT port: {right_port}")
+
+    REST_LEFT = {
+        "token": "REST_LEFT",
+        "type": "STATIC",
+        "duration": 0.5,
+        "keyframes": [{
+            "time": 0.0,
+            "L": [90, 90, 90, 90, 90],
+            "LW": [90, 90],
+            "LE": [90],
+            "LS": [90, 90]
+        }]
+    }
+    REST_RIGHT = {
+        "token": "REST_RIGHT",
+        "type": "STATIC",
+        "duration": 0.5,
+        "keyframes": [{
+            "time": 0.0,
+            "R": [90, 90, 90, 90, 90],
+            "RW": [90, 90],
+            "RE": [90],
+            "RS": [90, 90]
+        }]
+    }
 
     def json_default(obj):
         if isinstance(obj, ObjectId):
@@ -111,164 +136,161 @@ def run_motion(file_io, left_port="COM4", right_port="COM6", baud=115200):
     last_reconnect_right = 0
     reconnect_interval = 5.0  # Only try reconnecting every 5 seconds
 
-    # ACK-based synchronization: each arm has an event set when it sends ACK
     ack_received_left = threading.Event()
     ack_received_right = threading.Event()
-    pending_ack_left = False
-    pending_ack_right = False
+
+    last_active_arm = None  # None, "both", "left", "right"
 
     def read_arduino_messages(ser, name, ack_event=None):
-        """Non-blocking read of Arduino debug messages. Sets ack_event when ACK is received."""
+        """Non-blocking read of Arduino output. Sets ack_event when ACK is received."""
         if not is_serial_valid(ser):
             return
         try:
             while ser.in_waiting > 0:
                 line = ser.readline().decode(errors="ignore").strip()
-                if line:
-                    if line == "ACK":
-                        if ack_event is not None:
-                            ack_event.set()
-                        print(f"[MOTION_IO] ACK received from {name} controller.")
-                    else:
-                        print(f"[DEBUG] {name} Arduino: {line}")
-        except (OSError, serial.SerialException) as e:
-            # Device disconnected - this is expected, don't spam
-            pass
-        except Exception as e:
-            # Other errors - log occasionally
+                if line and line == "ACK" and ack_event is not None:
+                    ack_event.set()
+        except (OSError, serial.SerialException, Exception):
             pass
 
-    while True:
+    def wait_ack_then_send(ser, name, payload_bytes, ack_event, pending_ref, other_ser, other_name, other_ack_event, timeout_msg=None):
+        """Wait for previous ACK if needed, send payload, drain. Returns (sent: bool, connection_lost: bool)."""
+        if not is_serial_valid(ser):
+            return (False, False)
+        if pending_ref[0]:
+            wait_start = time.time()
+            while pending_ref[0] and not file_io.shutdown.is_set():
+                read_arduino_messages(ser, name, ack_event)
+                read_arduino_messages(other_ser, other_name, other_ack_event)
+                if ack_event.is_set():
+                    ack_event.clear()
+                    pending_ref[0] = False
+                    break
+                if time.time() - wait_start > ACK_TIMEOUT:
+                    if timeout_msg:
+                        print(timeout_msg)
+                    ack_event.clear()
+                    pending_ref[0] = False
+                    break
+                time.sleep(0.01)
+        if file_io.shutdown.is_set():
+            return (False, False)
+        try:
+            ser.write(payload_bytes)
+            ser.flush()
+            pending_ref[0] = True
+            time.sleep(0.05)
+            read_arduino_messages(ser, name, ack_event)
+            return (True, False)
+        except (serial.SerialException, OSError) as e:
+            print(f"[ERROR] Failed to send to {name} controller: {e}")
+            try:
+                ser.close()
+            except Exception:
+                pass
+            return (False, True)
+
+    pending_left = [False]
+    pending_right = [False]
+
+    while not file_io.shutdown.is_set():
         # Check for Arduino messages periodically (non-blocking)
         read_arduino_messages(ser_left, "LEFT", ack_received_left)
         read_arduino_messages(ser_right, "RIGHT", ack_received_right)
-        
-        file_io.motion_new_signal.wait()
 
-        # Pop all motion scripts from the queue
-        if not file_io.motion_queue.empty():
+        # Wait for motion work (timeout so we can check shutdown)
+        if not file_io.motion_new_signal.wait(timeout=0.1):
+            continue
+
+        # Pop all motion scripts from the queue (skip if shutting down)
+        if not file_io.motion_queue.empty() and not file_io.shutdown.is_set():
             script = file_io.pop_motion_script()
+            # Ensure keyframes is always an array for Arduino parsing
+            if isinstance(script.get("keyframes"), dict):
+                script["keyframes"] = list(script["keyframes"].values())
             payload = json.dumps(script, default=json_default) + "\n"
             payload_bytes = payload.encode("utf-8")
-
             current_time = time.time()
-            
-            # Debug: Check queue size
-            queue_size = file_io.motion_queue.qsize()
-            if queue_size > 0:
-                print(f"[DEBUG] Motion queue has {queue_size} remaining items")
 
-            # Route command only to controller(s) whose arm keys appear in keyframes
             send_to_left, send_to_right = get_arms_for_script(script)
             token_display = script.get("token", "?")
+            target = "BOTH" if (send_to_left and send_to_right) else ("LEFT" if send_to_left else "RIGHT")
+            print(f"[MOTION_IO] Sending '{token_display}' to {target}.")
+
+            # Determine current active arm(s)
             if send_to_left and send_to_right:
-                print(f"[MOTION_IO] Routing '{token_display}' to BOTH controllers.")
+                current_active_arm = "both"
             elif send_to_left:
-                print(f"[MOTION_IO] Routing '{token_display}' to LEFT controller only.")
+                current_active_arm = "left"
             elif send_to_right:
-                print(f"[MOTION_IO] Routing '{token_display}' to RIGHT controller only.")
+                current_active_arm = "right"
             else:
-                print(f"[MOTION_IO] Routing '{token_display}' to BOTH (no arm keys in keyframes).")
-            
-            # Try to send to left controller (only if script uses left arm keys)
-            if send_to_left and is_serial_valid(ser_left):
-                # Wait for previous command's ACK before sending next (with timeout)
-                if pending_ack_left:
-                    wait_start = time.time()
-                    while pending_ack_left:
-                        read_arduino_messages(ser_left, "LEFT", ack_received_left)
-                        read_arduino_messages(ser_right, "RIGHT", ack_received_right)
-                        if ack_received_left.is_set():
-                            ack_received_left.clear()
-                            pending_ack_left = False
-                            break
-                        if time.time() - wait_start > ACK_TIMEOUT:
-                            print(f"[MOTION_IO] ⚠ ACK timeout from LEFT controller after {ACK_TIMEOUT}s (continuing anyway).")
-                            ack_received_left.clear()
-                            pending_ack_left = False
-                            break
-                        time.sleep(0.01)
-                try:
-                    ser_left.write(payload_bytes)
-                    ser_left.flush()
-                    pending_ack_left = True
-                    print(f"[EXEC] Sent {script['token']} to LEFT controller (duration: {script.get('duration', '?')}s).")
-                    
-                    # Drain any immediate response (ACK will be handled in next wait or periodic read)
-                    time.sleep(0.05)
-                    read_arduino_messages(ser_left, "LEFT", ack_received_left)
-                    
-                except (serial.SerialException, OSError) as e:
-                    # Connection lost - show error and mark for reconnection
-                    print(f"[ERROR] Failed to send to LEFT controller: {e}")
-                    try:
-                        ser_left.close()
-                    except:
-                        pass
+                current_active_arm = None
+
+            # Send rest to inactive arm when switching context (both→one arm or left↔right)
+            if last_active_arm is not None and current_active_arm is not None:
+                if current_active_arm == "right" and last_active_arm in ("both", "left"):
+                    rest_script = dict(REST_LEFT)
+                    if isinstance(rest_script.get("keyframes"), dict):
+                        rest_script["keyframes"] = list(rest_script["keyframes"].values())
+                    rest_bytes = (json.dumps(rest_script, default=json_default) + "\n").encode("utf-8")
+                    sent, _ = wait_ack_then_send(
+                        ser_left, "LEFT", rest_bytes, ack_received_left, pending_left,
+                        ser_right, "RIGHT", ack_received_right, timeout_msg=None
+                    )
+                    if sent:
+                        print("[MOTION_IO] Sending LEFT arm to rest position.")
+                elif current_active_arm == "left" and last_active_arm in ("both", "right"):
+                    rest_script = dict(REST_RIGHT)
+                    if isinstance(rest_script.get("keyframes"), dict):
+                        rest_script["keyframes"] = list(rest_script["keyframes"].values())
+                    rest_bytes = (json.dumps(rest_script, default=json_default) + "\n").encode("utf-8")
+                    sent, _ = wait_ack_then_send(
+                        ser_right, "RIGHT", rest_bytes, ack_received_right, pending_right,
+                        ser_left, "LEFT", ack_received_left, timeout_msg=None
+                    )
+                    if sent:
+                        print("[MOTION_IO] Sending RIGHT arm to rest position.")
+
+            # Send main script to left controller
+            if send_to_left:
+                sent, connection_lost = wait_ack_then_send(
+                    ser_left, "LEFT", payload_bytes, ack_received_left, pending_left,
+                    ser_right, "RIGHT", ack_received_right,
+                    timeout_msg=f"[MOTION_IO] ⚠ ACK timeout from LEFT controller after {ACK_TIMEOUT}s (continuing anyway)."
+                )
+                if connection_lost:
                     ser_left = None
                     last_reconnect_left = current_time
-            elif ser_left is None:
-                # Only try reconnecting if enough time has passed
-                if (current_time - last_reconnect_left) >= reconnect_interval:
-                    ser_left = connect_serial(left_port, baud, "LEFT")
-                    if ser_left is None:
-                        last_reconnect_left = current_time
-            
-            # Try to send to right controller (only if script uses right arm keys)
-            if send_to_right and is_serial_valid(ser_right):
-                # Wait for previous command's ACK before sending next (with timeout)
-                if pending_ack_right:
-                    wait_start = time.time()
-                    while pending_ack_right:
-                        read_arduino_messages(ser_left, "LEFT", ack_received_left)
-                        read_arduino_messages(ser_right, "RIGHT", ack_received_right)
-                        if ack_received_right.is_set():
-                            ack_received_right.clear()
-                            pending_ack_right = False
-                            break
-                        if time.time() - wait_start > ACK_TIMEOUT:
-                            print(f"[MOTION_IO] ⚠ ACK timeout from RIGHT controller after {ACK_TIMEOUT}s (continuing anyway).")
-                            ack_received_right.clear()
-                            pending_ack_right = False
-                            break
-                        time.sleep(0.01)
-                try:
-                    ser_right.write(payload_bytes)
-                    ser_right.flush()
-                    pending_ack_right = True
-                    print(f"[EXEC] Sent {script['token']} to RIGHT controller (duration: {script.get('duration', '?')}s).")
-                    
-                    # Drain any immediate response (ACK will be handled in next wait or periodic read)
-                    time.sleep(0.05)
-                    read_arduino_messages(ser_right, "RIGHT", ack_received_right)
-                    
-                except (serial.SerialException, OSError) as e:
-                    # Connection lost - show error and mark for reconnection
-                    print(f"[ERROR] Failed to send to RIGHT controller: {e}")
-                    try:
-                        ser_right.close()
-                    except:
-                        pass
+                elif sent:
+                    print(f"[EXEC] Sent {script['token']} to LEFT controller (duration: {script.get('duration', '?')}s).")
+            if ser_left is None and (current_time - last_reconnect_left) >= reconnect_interval:
+                ser_left = connect_serial(left_port, baud, "LEFT")
+                if ser_left is None:
+                    last_reconnect_left = current_time
+
+            # Send main script to right controller
+            if send_to_right:
+                sent, connection_lost = wait_ack_then_send(
+                    ser_right, "RIGHT", payload_bytes, ack_received_right, pending_right,
+                    ser_left, "LEFT", ack_received_left,
+                    timeout_msg=f"[MOTION_IO] ⚠ ACK timeout from RIGHT controller after {ACK_TIMEOUT}s (continuing anyway)."
+                )
+                if connection_lost:
                     ser_right = None
                     last_reconnect_right = current_time
-            elif ser_right is None:
-                # Only try reconnecting if enough time has passed
-                if (current_time - last_reconnect_right) >= reconnect_interval:
-                    ser_right = connect_serial(right_port, baud, "RIGHT")
-                    if ser_right is None:
-                        last_reconnect_right = current_time
-            
-            # Timing is ACK-based: we wait for each arm's ACK before sending the next command to that arm.
-            # Apply smart delay before next motion: short for fingerspelling, normal for full signs.
+                elif sent:
+                    print(f"[EXEC] Sent {script['token']} to RIGHT controller (duration: {script.get('duration', '?')}s).")
+            if ser_right is None and (current_time - last_reconnect_right) >= reconnect_interval:
+                ser_right = connect_serial(right_port, baud, "RIGHT")
+                if ser_right is None:
+                    last_reconnect_right = current_time
+
+            last_active_arm = current_active_arm
+
+            # Inter-motion delay: shorter for letters, longer for full signs
             if not file_io.motion_queue.empty():
-                token = script.get("token", "")
-                is_fingerspelling = len(token) == 1
-                if is_fingerspelling:
-                    delay_s = FINGERSPELL_POST_DELAY
-                    print(f"[MOTION_IO] Fingerspelling delay: {int(delay_s * 1000)}ms before next motion.")
-                else:
-                    delay_s = SIGN_POST_DELAY
-                    print(f"[MOTION_IO] Sign delay: {int(delay_s * 1000)}ms before next motion.")
+                delay_s = FINGERSPELL_POST_DELAY if len(script.get("token", "")) == 1 else SIGN_POST_DELAY
                 time.sleep(delay_s)
 
             # Clear event if no motions left
@@ -276,3 +298,12 @@ def run_motion(file_io, left_port="COM4", right_port="COM6", baud=115200):
                 file_io.motion_new_signal.clear()
 
         time.sleep(0.01)
+
+    # Shutdown: close serial ports
+    for ser, name in [(ser_left, "LEFT"), (ser_right, "RIGHT")]:
+        if ser is not None and is_serial_valid(ser):
+            try:
+                ser.close()
+                print(f"[MOTION_IO] Closed {name} controller.")
+            except Exception:
+                pass

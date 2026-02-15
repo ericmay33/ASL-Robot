@@ -1,21 +1,21 @@
-from src.database.db_connection import DatabaseConnection
-from src.database.db_functions import get_sign_by_token
-from src.cache.fingerspelling_cache import get_letter_motion
 import time
 
-#configs
-NONEXIST_TOKENS_FILE = "src/database/tokens_to_add.txt"
+from src.cache.fingerspelling_cache import get_letter_motion
+from src.database.db_connection import DatabaseConnection
+from src.database.db_functions import get_sign_by_token
+
 
 def run_database(file_io):
     DatabaseConnection.initialize()
     print("[DB_IO] Started database I/O handler loop.")
 
-    while True:
-        # Wait for tokens from AI_IO
-        file_io.asl_new_signal.wait()
-        
+    while not file_io.shutdown.is_set():
+        # Wait for tokens from AI_IO (timeout to check shutdown)
+        if not file_io.asl_new_signal.wait(timeout=0.5):
+            continue
+
         # Process all tokens in the queue
-        while not file_io.asl_token_queue.empty():
+        while not file_io.asl_token_queue.empty() and not file_io.shutdown.is_set():
             token = file_io.pop_asl_token()
             sign_data = get_sign_by_token(token)
 
