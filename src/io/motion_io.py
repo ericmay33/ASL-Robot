@@ -1,5 +1,5 @@
 # src/io/motion_io.py
-import json, serial, time, os, threading
+import json, serial, time, threading
 from bson import ObjectId
 
 # ACK timeout in seconds when waiting for Arduino to finish a motion
@@ -13,10 +13,8 @@ SIGN_POST_DELAY = 0.15         # 150 ms between full signs
 
 def connect_serial(port, baud, name):
     """Attempt to connect to a serial port with validation."""
-    if not os.path.exists(port):
-        print(f"[MOTION_IO] ⚠ {name} port does not exist: {port}")
-        return None
-    
+    port = str(port).strip()
+
     try:
         ser = serial.Serial(port, baud, timeout=2)
         # Give the serial port a moment to initialize
