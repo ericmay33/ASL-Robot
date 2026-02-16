@@ -1,6 +1,8 @@
 # src/io/motion_io.py
-import json, serial, time, os, threading
+import json, serial, time, threading
 from bson import ObjectId
+
+from src.cache.rest_cache import REST_LEFT, REST_RIGHT
 
 # ACK timeout in seconds when waiting for Arduino to finish a motion
 ACK_TIMEOUT = 8.0
@@ -13,10 +15,8 @@ SIGN_POST_DELAY = 0.15         # 150 ms between full signs
 
 def connect_serial(port, baud, name):
     """Attempt to connect to a serial port with validation."""
-    if not os.path.exists(port):
-        print(f"[MOTION_IO] ⚠ {name} port does not exist: {port}")
-        return None
-    
+    port = str(port).strip()
+
     try:
         ser = serial.Serial(port, baud, timeout=2)
         # Give the serial port a moment to initialize
@@ -98,31 +98,6 @@ def run_motion(file_io, left_port="COM3", right_port="COM6", baud=115200):
         print(f"[MOTION_IO] To connect controllers, ensure they're plugged in and ports are correct:")
         print(f"  - LEFT port: {left_port}")
         print(f"  - RIGHT port: {right_port}")
-
-    REST_LEFT = {
-        "token": "REST_LEFT",
-        "type": "STATIC",
-        "duration": 0.5,
-        "keyframes": [{
-            "time": 0.0,
-            "L": [90, 90, 90, 90, 90],
-            "LW": [90, 90],
-            "LE": [90],
-            "LS": [90, 90]
-        }]
-    }
-    REST_RIGHT = {
-        "token": "REST_RIGHT",
-        "type": "STATIC",
-        "duration": 0.5,
-        "keyframes": [{
-            "time": 0.0,
-            "R": [90, 90, 90, 90, 90],
-            "RW": [90, 90],
-            "RE": [90],
-            "RS": [90, 90]
-        }]
-    }
 
     def json_default(obj):
         if isinstance(obj, ObjectId):
