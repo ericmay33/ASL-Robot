@@ -2,6 +2,8 @@
 import json, serial, time, threading
 from bson import ObjectId
 
+from src.cache.rest_cache import REST_LEFT, REST_RIGHT
+
 # ACK timeout in seconds when waiting for Arduino to finish a motion
 ACK_TIMEOUT = 8.0
 
@@ -96,31 +98,6 @@ def run_motion(file_io, left_port="COM3", right_port="COM6", baud=115200):
         print(f"[MOTION_IO] To connect controllers, ensure they're plugged in and ports are correct:")
         print(f"  - LEFT port: {left_port}")
         print(f"  - RIGHT port: {right_port}")
-
-    REST_LEFT = {
-        "token": "REST_LEFT",
-        "type": "STATIC",
-        "duration": 0.5,
-        "keyframes": [{
-            "time": 0.0,
-            "L": [90, 90, 90, 90, 90],
-            "LW": [90, 90],
-            "LE": [90],
-            "LS": [90, 90]
-        }]
-    }
-    REST_RIGHT = {
-        "token": "REST_RIGHT",
-        "type": "STATIC",
-        "duration": 0.5,
-        "keyframes": [{
-            "time": 0.0,
-            "R": [90, 90, 90, 90, 90],
-            "RW": [90, 90],
-            "RE": [90],
-            "RS": [90, 90]
-        }]
-    }
 
     def json_default(obj):
         if isinstance(obj, ObjectId):
