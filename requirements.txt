@@ -8,3 +8,4 @@ pyserial
 sounddevice
 torch
 transformers
+pillow
