@@ -11,3 +11,4 @@ transformers
 openai-whisper
 torchaudio
 numpy
+pillow
