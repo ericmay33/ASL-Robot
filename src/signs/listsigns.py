@@ -6,5 +6,5 @@ DatabaseConnection.initialize()
 
 all_signs = get_all_signs()
 for sign in all_signs:
-    # print(f" {sign.get('token')}")
-    print(sign)
+    print(f" {sign.get('token')}")
+    # print(sign)
