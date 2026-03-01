@@ -1,20 +1,30 @@
 #include <Arduino.h>
 #include <ESP32Servo.h>
 #include <ArduinoJson.h>
+#include <AccelStepper.h>
 
 // ================================
 // CONFIGURATION
 // ================================
-// Right arm servos: Hand (5) + Wrist (2) + Elbow (1) + Shoulder (2) = 10 total
-#define HAND_SERVO_COUNT 5
+// Right arm servos: Hand (5) + Wrist (2) + Elbow (1) = 8 total
+// Shoulder joints are stepper motors (A4988) — see SHOULDER STEPPER PINS below
+#define HAND_SERVO_COUNT  5
 #define WRIST_SERVO_COUNT 2
 #define ELBOW_SERVO_COUNT 1
-#define SHOULDER_SERVO_COUNT 2
-#define TOTAL_SERVO_COUNT 10
+#define TOTAL_SERVO_COUNT 8
 
-#define MAX_QUEUE 3            // command buffer size
-#define BAUD_RATE 115200
-#define DEFAULT_STEP_DELAY 2   // ms per movement step (reduced for smoother motion)
+#define MAX_QUEUE          3
+#define BAUD_RATE          115200
+#define DEFAULT_STEP_DELAY 2   // ms per servo movement step
+
+// Stepper calibration (both arms share same hardware, so same constants)
+// Rotation axis — tune for actual gear ratio
+#define ROTATION_STEPS_PER_DEG  320.0f
+// Elevation axis — tune for actual gear ratio
+#define ELEVATION_STEPS_PER_DEG 222.22f
+
+#define SHOULDER_MAX_SPEED 10000.0f
+#define SHOULDER_ACCEL     5000.0f
 
 // ================================
 // SERVO DECLARATIONS
@@ -22,18 +32,39 @@
 Servo handServos[HAND_SERVO_COUNT];
 Servo wristServos[WRIST_SERVO_COUNT];
 Servo elbowServos[ELBOW_SERVO_COUNT];
-Servo shoulderServos[SHOULDER_SERVO_COUNT];
 
-// Change these pins to your setup
-// Hand servos (R)
-int handPins[HAND_SERVO_COUNT] = {12, 14, 27, 26, 25};
-// Wrist servos (RW)
-int wristPins[WRIST_SERVO_COUNT] = {19, 21};
+// Hand servos (R): Thumb, Index, Middle, Ring, Pinky
+int handPins[HAND_SERVO_COUNT]   = {15, 2, 0, 4, 16};
+// Wrist servos (RW): Rotation, Flexion
+int wristPins[WRIST_SERVO_COUNT] = {18, 19};
 // Elbow servo (RE)
-int elbowPins[ELBOW_SERVO_COUNT] = {22};
-// Shoulder servos (RS)
-int shoulderPins[SHOULDER_SERVO_COUNT] = {23, 25};
-  
+int elbowPins[ELBOW_SERVO_COUNT] = {21};
+
+// ================================
+// SHOULDER STEPPER PINS
+// ================================
+// Motor 1: Shoulder Rotation (internal/external rotation)
+// ⚠ GPIO 34 and 35 are INPUT-ONLY on standard ESP32 — replace if motor 1 does not move
+const int shoulder1_dirPin    = 34;  // ⚠ INPUT-ONLY on ESP32 — swap to an output-capable GPIO
+const int shoulder1_stepPin   = 35;  // ⚠ INPUT-ONLY on ESP32 — swap to an output-capable GPIO
+const int shoulder1_ms1Pin    = 33;
+const int shoulder1_ms2Pin    = 32;
+const int shoulder1_enablePin = 25;
+
+// Motor 2: Shoulder Elevation (raise/lower)
+const int shoulder2_dirPin    = 26;
+const int shoulder2_stepPin   = 27;
+const int shoulder2_ms1Pin    = 12;
+const int shoulder2_ms2Pin    = 14;
+const int shoulder2_enablePin = 13;
+
+// ================================
+// SHOULDER STEPPER OBJECTS
+// AccelStepper type 1 = DRIVER interface (STEP + DIR)
+// ================================
+AccelStepper shoulderRotation(1, shoulder1_stepPin, shoulder1_dirPin);
+AccelStepper shoulderElevation(1, shoulder2_stepPin, shoulder2_dirPin);
+
 // ================================
 // COMMAND QUEUE
 // ================================
@@ -68,7 +99,7 @@ bool dequeueCommand(String &cmd) {
 // PROCESS ONE MOTION COMMAND
 // ================================
 void processCommand(String jsonCmd) {
-  
+
   StaticJsonDocument<2048> doc;
   DeserializationError err = deserializeJson(doc, jsonCmd);
 
@@ -92,17 +123,24 @@ void processCommand(String jsonCmd) {
     return;
   }
 
+  // Previous stepper positions in steps — persisted across keyframes
+  static long prevRotationSteps  = 0;
+  static long prevElevationSteps = 0;
+
   // Process each keyframe
   for (JsonObject frame : keyframes) {
-    
-    // Prepare target angles for all servo groups
+
+    // Extract target servo angles
     int targetHandAngles[HAND_SERVO_COUNT];
     int targetWristAngles[WRIST_SERVO_COUNT];
     int targetElbowAngles[ELBOW_SERVO_COUNT];
-    int targetShoulderAngles[SHOULDER_SERVO_COUNT];
-    
+
     bool hasHand = false, hasWrist = false, hasElbow = false, hasShoulder = false;
-    
+
+    // Stepper targets default to previous position (no movement if RS absent)
+    long targetRotationSteps  = prevRotationSteps;
+    long targetElevationSteps = prevElevationSteps;
+
     // Extract right-hand array (R)
     JsonArray R = frame["R"];
     if (!R.isNull() && R.size() == HAND_SERVO_COUNT) {
@@ -130,138 +168,85 @@ void processCommand(String jsonCmd) {
       hasElbow = true;
     }
 
-    // Extract right-shoulder array (RS)
+    // Extract right-shoulder array (RS): [rotation_deg, elevation_deg]
     JsonArray RS = frame["RS"];
-    if (!RS.isNull() && RS.size() == SHOULDER_SERVO_COUNT) {
-      for (int i = 0; i < SHOULDER_SERVO_COUNT; i++) {
-        targetShoulderAngles[i] = RS[i].as<int>();
-      }
+    if (!RS.isNull() && RS.size() == 2) {
+      targetRotationSteps  = (long)(RS[0].as<float>() * ROTATION_STEPS_PER_DEG);
+      targetElevationSteps = (long)(RS[1].as<float>() * ELEVATION_STEPS_PER_DEG);
       hasShoulder = true;
     }
 
-    // Smooth concurrent motion - move all servos together
-    // Use local variables for current positions (no persistent storage)
+    // Queue stepper targets (non-blocking — .run() advances below)
+    if (hasShoulder) {
+      shoulderRotation.moveTo(targetRotationSteps);
+      shoulderElevation.moveTo(targetElevationSteps);
+    }
+
+    // Initialize current servo positions from previous keyframe
     int currentHand[HAND_SERVO_COUNT];
     int currentWrist[WRIST_SERVO_COUNT];
     int currentElbow[ELBOW_SERVO_COUNT];
-    int currentShoulder[SHOULDER_SERVO_COUNT];
-    
-    // Initialize from previous keyframe targets (or 90 if first frame)
-    static int prevHand[HAND_SERVO_COUNT] = {90, 90, 90, 90, 90};
+
+    static int prevHand[HAND_SERVO_COUNT]   = {90, 90, 90, 90, 90};
     static int prevWrist[WRIST_SERVO_COUNT] = {90, 90};
     static int prevElbow[ELBOW_SERVO_COUNT] = {90};
-    static int prevShoulder[SHOULDER_SERVO_COUNT] = {90, 90};
-    
-    if (hasHand) {
-      for (int i = 0; i < HAND_SERVO_COUNT; i++) {
-        currentHand[i] = prevHand[i];
-      }
-    }
-    if (hasWrist) {
-      for (int i = 0; i < WRIST_SERVO_COUNT; i++) {
-        currentWrist[i] = prevWrist[i];
-      }
-    }
-    if (hasElbow) {
-      for (int i = 0; i < ELBOW_SERVO_COUNT; i++) {
-        currentElbow[i] = prevElbow[i];
-      }
-    }
-    if (hasShoulder) {
-      for (int i = 0; i < SHOULDER_SERVO_COUNT; i++) {
-        currentShoulder[i] = prevShoulder[i];
-      }
-    }
 
-    // Find max steps needed
+    if (hasHand)  { for (int i = 0; i < HAND_SERVO_COUNT;  i++) currentHand[i]  = prevHand[i]; }
+    if (hasWrist) { for (int i = 0; i < WRIST_SERVO_COUNT; i++) currentWrist[i] = prevWrist[i]; }
+    if (hasElbow) { for (int i = 0; i < ELBOW_SERVO_COUNT; i++) currentElbow[i] = prevElbow[i]; }
+
+    // Find max servo steps needed
     int maxSteps = 0;
-    if (hasHand) {
-      for (int i = 0; i < HAND_SERVO_COUNT; i++) {
-        int steps = abs(targetHandAngles[i] - currentHand[i]);
-        if (steps > maxSteps) maxSteps = steps;
-      }
-    }
-    if (hasWrist) {
-      for (int i = 0; i < WRIST_SERVO_COUNT; i++) {
-        int steps = abs(targetWristAngles[i] - currentWrist[i]);
-        if (steps > maxSteps) maxSteps = steps;
-      }
-    }
-    if (hasElbow) {
-      for (int i = 0; i < ELBOW_SERVO_COUNT; i++) {
-        int steps = abs(targetElbowAngles[i] - currentElbow[i]);
-        if (steps > maxSteps) maxSteps = steps;
-      }
-    }
-    if (hasShoulder) {
-      for (int i = 0; i < SHOULDER_SERVO_COUNT; i++) {
-        int steps = abs(targetShoulderAngles[i] - currentShoulder[i]);
-        if (steps > maxSteps) maxSteps = steps;
-      }
-    }
+    if (hasHand)  { for (int i = 0; i < HAND_SERVO_COUNT;  i++) { int s = abs(targetHandAngles[i]  - currentHand[i]);  if (s > maxSteps) maxSteps = s; } }
+    if (hasWrist) { for (int i = 0; i < WRIST_SERVO_COUNT; i++) { int s = abs(targetWristAngles[i] - currentWrist[i]); if (s > maxSteps) maxSteps = s; } }
+    if (hasElbow) { for (int i = 0; i < ELBOW_SERVO_COUNT; i++) { int s = abs(targetElbowAngles[i] - currentElbow[i]); if (s > maxSteps) maxSteps = s; } }
 
-    // Move all servos concurrently
+    // Move all servos concurrently, advance steppers each iteration
     for (int step = 0; step < maxSteps; step++) {
-      // Update all positions, then write all servos together
       if (hasHand) {
         for (int i = 0; i < HAND_SERVO_COUNT; i++) {
-          if (currentHand[i] != targetHandAngles[i]) {
+          if (currentHand[i] != targetHandAngles[i])
             currentHand[i] += (currentHand[i] < targetHandAngles[i]) ? 1 : -1;
-          }
           handServos[i].write(currentHand[i]);
         }
       }
-      
       if (hasWrist) {
         for (int i = 0; i < WRIST_SERVO_COUNT; i++) {
-          if (currentWrist[i] != targetWristAngles[i]) {
+          if (currentWrist[i] != targetWristAngles[i])
             currentWrist[i] += (currentWrist[i] < targetWristAngles[i]) ? 1 : -1;
-          }
           wristServos[i].write(currentWrist[i]);
         }
       }
-      
       if (hasElbow) {
         for (int i = 0; i < ELBOW_SERVO_COUNT; i++) {
-          if (currentElbow[i] != targetElbowAngles[i]) {
+          if (currentElbow[i] != targetElbowAngles[i])
             currentElbow[i] += (currentElbow[i] < targetElbowAngles[i]) ? 1 : -1;
-          }
           elbowServos[i].write(currentElbow[i]);
         }
       }
-      
-      if (hasShoulder) {
-        for (int i = 0; i < SHOULDER_SERVO_COUNT; i++) {
-          if (currentShoulder[i] != targetShoulderAngles[i]) {
-            currentShoulder[i] += (currentShoulder[i] < targetShoulderAngles[i]) ? 1 : -1;
-          }
-          shoulderServos[i].write(currentShoulder[i]);
-        }
-      }
-      
+
+      // Advance steppers alongside servos (non-blocking)
+      shoulderRotation.run();
+      shoulderElevation.run();
+
       delay(DEFAULT_STEP_DELAY);
     }
 
-    // Update previous positions for next keyframe
-    if (hasHand) {
-      for (int i = 0; i < HAND_SERVO_COUNT; i++) {
-        prevHand[i] = targetHandAngles[i];
-      }
+    // Update previous servo positions
+    if (hasHand)  { for (int i = 0; i < HAND_SERVO_COUNT;  i++) prevHand[i]  = targetHandAngles[i]; }
+    if (hasWrist) { for (int i = 0; i < WRIST_SERVO_COUNT; i++) prevWrist[i] = targetWristAngles[i]; }
+    if (hasElbow) { for (int i = 0; i < ELBOW_SERVO_COUNT; i++) prevElbow[i] = targetElbowAngles[i]; }
+
+    // Finish any remaining stepper movement after servo loop completes
+    while (shoulderRotation.distanceToGo() != 0 || shoulderElevation.distanceToGo() != 0) {
+      shoulderRotation.run();
+      shoulderElevation.run();
     }
-    if (hasWrist) {
-      for (int i = 0; i < WRIST_SERVO_COUNT; i++) {
-        prevWrist[i] = targetWristAngles[i];
-      }
-    }
-    if (hasElbow) {
-      for (int i = 0; i < ELBOW_SERVO_COUNT; i++) {
-        prevElbow[i] = targetElbowAngles[i];
-      }
-    }
+
+    // Update previous stepper positions
     if (hasShoulder) {
-      for (int i = 0; i < SHOULDER_SERVO_COUNT; i++) {
-        prevShoulder[i] = targetShoulderAngles[i];
-      }
+      prevRotationSteps  = targetRotationSteps;
+      prevElevationSteps = targetElevationSteps;
     }
 
     // Calculate frame time based on duration
@@ -300,11 +285,33 @@ void setup() {
     elbowServos[i].write(90);
   }
 
-  // Attach shoulder servos
-  for (int i = 0; i < SHOULDER_SERVO_COUNT; i++) {
-    shoulderServos[i].attach(shoulderPins[i]);
-    shoulderServos[i].write(90);
-  }
+  // Configure shoulder stepper pins
+  pinMode(shoulder1_stepPin,   OUTPUT);
+  pinMode(shoulder1_dirPin,    OUTPUT);
+  pinMode(shoulder1_enablePin, OUTPUT);
+  pinMode(shoulder1_ms1Pin,    OUTPUT);
+  pinMode(shoulder1_ms2Pin,    OUTPUT);
+  pinMode(shoulder2_stepPin,   OUTPUT);
+  pinMode(shoulder2_dirPin,    OUTPUT);
+  pinMode(shoulder2_enablePin, OUTPUT);
+  pinMode(shoulder2_ms1Pin,    OUTPUT);
+  pinMode(shoulder2_ms2Pin,    OUTPUT);
+
+  // 1/16 microstepping: MS1=HIGH, MS2=HIGH on A4988
+  digitalWrite(shoulder1_ms1Pin, HIGH);
+  digitalWrite(shoulder1_ms2Pin, HIGH);
+  digitalWrite(shoulder2_ms1Pin, HIGH);
+  digitalWrite(shoulder2_ms2Pin, HIGH);
+
+  // Enable motors (ENABLE is active LOW)
+  digitalWrite(shoulder1_enablePin, LOW);
+  digitalWrite(shoulder2_enablePin, LOW);
+
+  // Configure AccelStepper
+  shoulderRotation.setMaxSpeed(SHOULDER_MAX_SPEED);
+  shoulderRotation.setAcceleration(SHOULDER_ACCEL);
+  shoulderElevation.setMaxSpeed(SHOULDER_MAX_SPEED);
+  shoulderElevation.setAcceleration(SHOULDER_ACCEL);
 
   Serial.println("[RIGHT_ARM] Ready for motion commands.");
 }
@@ -332,4 +339,3 @@ void loop() {
     }
   }
 }
-
