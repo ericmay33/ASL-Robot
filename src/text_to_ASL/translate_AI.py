@@ -21,7 +21,8 @@ def phrase_find(tokens: list[str]) -> list[str]:
         ("VERY", "BIG"): "HUGE",
         ("VERY", "SMALL"): "TINY",
         ("KICK", "BUCKET"): "DIE",
-        ("PIECE", "CAKE"): "EASY"
+        ("PIECE", "CAKE"): "EASY",
+        ("YOU", "WELCOME"): "YOURE-WELCOME"
     }
     
     while i < len(tokens):

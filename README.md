@@ -266,14 +266,14 @@ Each sign in the database follows this schema. Currently, the system implements 
 - **duration**: Total sign duration in seconds
 - **keyframes**: Array of servo positions over time
   - **time**: Timestamp in seconds (relative to sign start)
-  - **L**: Array of 5 servo angles (0-180°) for left hand finger/hand articulation
-  - **R**: Array of 5 servo angles (0-180°) for right hand finger/hand articulation
-  - **LW**: Array of 2 servo angles (0-180°) for left wrist (rotation, flexion)
-  - **RW**: Array of 2 servo angles (0-180°) for right wrist (rotation, flexion)
-  - **LE**: Array of 1 servo angle (0-180°) for left elbow (flexion/extension)
-  - **RE**: Array of 1 servo angle (0-180°) for right elbow (flexion/extension)
-  - **LS**: Array of 2 servo angles (0-180°) for left shoulder (rotation, elevation)
-  - **RS**: Array of 2 servo angles (0-180°) for right shoulder (rotation, elevation)
+  - **L**: Array of 5 servo angles (0-180°) for left hand finger/hand articulation. 0° represents extension, while 180° is full flex.
+  - **R**: Array of 5 servo angles (0-180°) for right hand finger/hand articulation. 0° represents extension, while 180° is full flex.
+  - **LW**: Array of 2 servo angles (0-180°) for left wrist (rotation, flexion). For rotation, 0°  results in a forward facing hand, while 180° represents a backward facing hand.
+  - **RW**: Array of 2 servo angles (0-180°) for right wrist (rotation, flexion). For rotation, 0°  results in a forward facing hand, while 180° represents a backward facing hand.
+  - **LE**: Array of 1 servo angle (0-180°) for left elbow (flexion/extension). 0° represents extension, while 180° is full flex.
+  - **RE**: Array of 1 servo angle (0-180°) for right elbow (flexion/extension). 0° represents extension, while 180° is full flex.
+  - **LS**: Array of 2 servo angles (0-180°) for left shoulder (rotation, elevation). For rotation, 0° represents the arm turned towards the torso, while 180° represents the arm rotated away from the body. For elevation, 0° represents the arm resting downward, parallelling the torso.
+  - **RS**: Array of 2 servo angles (0-180°) for right shoulder (rotation, elevation). For rotation, 0° represents the arm turned towards the torso, while 180° represents the arm rotated away from the body. For elevation, 0° represents the arm resting downward, parallelling the torso.
 
 **Note**: All servo groups are optional in keyframes. Only include the servo groups that need to change for a given sign. Servo groups not specified in a keyframe will maintain their previous position.
 
