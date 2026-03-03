@@ -22,7 +22,9 @@ def phrase_find(tokens: list[str]) -> list[str]:
         ("VERY", "SMALL"): "TINY",
         ("KICK", "BUCKET"): "DIE",
         ("PIECE", "CAKE"): "EASY",
-        ("YOU", "WELCOME"): "YOURE-WELCOME"
+        ("YOU", "WELCOME"): "YOURE-WELCOME",
+        ("CATCH", "BALL"): "CATCH_BALL",
+        ("THROW", "BALL"): "THROW_BALL",
     }
     
     while i < len(tokens):
@@ -73,7 +75,7 @@ def translate_to_asl_gloss(text: str) -> list[str]:
         
         # Cleaning tokens
         questionWords = {"WHO", "WHAT", "WHEN", "WHERE", "WHY", "HOW"}
-        removeWords = {"BE", "POSS"}
+        removeWords = {"BE", "POSS", "TO"}
         removeExtensions = {"DESC-", "X-"}
         number_map = {
             "0": "ZERO", "1": "ONE", "2": "TWO", "3": "THREE", "4": "FOUR",
