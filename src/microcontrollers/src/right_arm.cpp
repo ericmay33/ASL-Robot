@@ -20,8 +20,8 @@
 // Stepper calibration (both arms share same hardware, so same constants)
 // Rotation axis — tune for actual gear ratio
 #define ROTATION_STEPS_PER_DEG  320.0f
-// Elevation axis — tune for actual gear ratio
-#define ELEVATION_STEPS_PER_DEG 222.22f
+// Elevation axis — 125:1 gearbox
+#define ELEVATION_STEPS_PER_DEG 1111.11f  // 3200 * 125 / 360
 
 #define SHOULDER_MAX_SPEED 10000.0f
 #define SHOULDER_ACCEL     5000.0f
@@ -34,36 +34,31 @@ Servo wristServos[WRIST_SERVO_COUNT];
 Servo elbowServos[ELBOW_SERVO_COUNT];
 
 // Hand servos (R): Thumb, Index, Middle, Ring, Pinky
-int handPins[HAND_SERVO_COUNT]   = {15, 2, 0, 4, 16};
-// Wrist servos (RW): Rotation, Flexion
-int wristPins[WRIST_SERVO_COUNT] = {18, 19};
+int handPins[HAND_SERVO_COUNT]   = {2, 4, 5, 18, 19};
+// Wrist servos (RW): Rotation, Flexion/Extension
+int wristPins[WRIST_SERVO_COUNT] = {21, 22};
 // Elbow servo (RE)
-int elbowPins[ELBOW_SERVO_COUNT] = {21};
+int elbowPins[ELBOW_SERVO_COUNT] = {23};
 
 // ================================
 // SHOULDER STEPPER PINS
 // ================================
-// Motor 1: Shoulder Rotation (internal/external rotation)
-// ⚠ GPIO 34 and 35 are INPUT-ONLY on standard ESP32 — replace if motor 1 does not move
-const int shoulder1_dirPin    = 34;  // ⚠ INPUT-ONLY on ESP32 — swap to an output-capable GPIO
-const int shoulder1_stepPin   = 35;  // ⚠ INPUT-ONLY on ESP32 — swap to an output-capable GPIO
-const int shoulder1_ms1Pin    = 33;
-const int shoulder1_ms2Pin    = 32;
+// Motor 1: Shoulder Rotation (internal/external rotation) — 36:1 gearbox
+const int shoulder1_stepPin   = 33;
+const int shoulder1_dirPin    = 32;
 const int shoulder1_enablePin = 25;
 
-// Motor 2: Shoulder Elevation (raise/lower)
-const int shoulder2_dirPin    = 26;
+// Motor 2: Shoulder Flexion/Elevation (raise/lower) — 125:1 gearbox
 const int shoulder2_stepPin   = 27;
-const int shoulder2_ms1Pin    = 12;
-const int shoulder2_ms2Pin    = 14;
-const int shoulder2_enablePin = 13;
+const int shoulder2_dirPin    = 26;
+const int shoulder2_enablePin = 14;
 
 // ================================
 // SHOULDER STEPPER OBJECTS
-// AccelStepper type 1 = DRIVER interface (STEP + DIR)
+// AccelStepper::DRIVER = STEP + DIR interface (MS1/MS2 hardwired on driver board)
 // ================================
-AccelStepper shoulderRotation(1, shoulder1_stepPin, shoulder1_dirPin);
-AccelStepper shoulderElevation(1, shoulder2_stepPin, shoulder2_dirPin);
+AccelStepper shoulderRotation(AccelStepper::DRIVER, shoulder1_stepPin, shoulder1_dirPin);
+AccelStepper shoulderFlexion(AccelStepper::DRIVER,  shoulder2_stepPin, shoulder2_dirPin);
 
 // ================================
 // COMMAND QUEUE
@@ -179,7 +174,7 @@ void processCommand(String jsonCmd) {
     // Queue stepper targets (non-blocking — .run() advances below)
     if (hasShoulder) {
       shoulderRotation.moveTo(targetRotationSteps);
-      shoulderElevation.moveTo(targetElevationSteps);
+      shoulderFlexion.moveTo(targetElevationSteps);
     }
 
     // Initialize current servo positions from previous keyframe
@@ -227,7 +222,7 @@ void processCommand(String jsonCmd) {
 
       // Advance steppers alongside servos (non-blocking)
       shoulderRotation.run();
-      shoulderElevation.run();
+      shoulderFlexion.run();
 
       delay(DEFAULT_STEP_DELAY);
     }
@@ -238,9 +233,9 @@ void processCommand(String jsonCmd) {
     if (hasElbow) { for (int i = 0; i < ELBOW_SERVO_COUNT; i++) prevElbow[i] = targetElbowAngles[i]; }
 
     // Finish any remaining stepper movement after servo loop completes
-    while (shoulderRotation.distanceToGo() != 0 || shoulderElevation.distanceToGo() != 0) {
+    while (shoulderRotation.distanceToGo() != 0 || shoulderFlexion.distanceToGo() != 0) {
       shoulderRotation.run();
-      shoulderElevation.run();
+      shoulderFlexion.run();
     }
 
     // Update previous stepper positions
@@ -285,33 +280,23 @@ void setup() {
     elbowServos[i].write(90);
   }
 
-  // Configure shoulder stepper pins
+  // Shoulder stepper 1 (Rotation)
   pinMode(shoulder1_stepPin,   OUTPUT);
   pinMode(shoulder1_dirPin,    OUTPUT);
   pinMode(shoulder1_enablePin, OUTPUT);
-  pinMode(shoulder1_ms1Pin,    OUTPUT);
-  pinMode(shoulder1_ms2Pin,    OUTPUT);
+  digitalWrite(shoulder1_enablePin, LOW);  // active LOW
+
+  // Shoulder stepper 2 (Flexion/Elevation)
   pinMode(shoulder2_stepPin,   OUTPUT);
   pinMode(shoulder2_dirPin,    OUTPUT);
   pinMode(shoulder2_enablePin, OUTPUT);
-  pinMode(shoulder2_ms1Pin,    OUTPUT);
-  pinMode(shoulder2_ms2Pin,    OUTPUT);
+  digitalWrite(shoulder2_enablePin, LOW);  // active LOW
 
-  // 1/16 microstepping: MS1=HIGH, MS2=HIGH on A4988
-  digitalWrite(shoulder1_ms1Pin, HIGH);
-  digitalWrite(shoulder1_ms2Pin, HIGH);
-  digitalWrite(shoulder2_ms1Pin, HIGH);
-  digitalWrite(shoulder2_ms2Pin, HIGH);
-
-  // Enable motors (ENABLE is active LOW)
-  digitalWrite(shoulder1_enablePin, LOW);
-  digitalWrite(shoulder2_enablePin, LOW);
-
-  // Configure AccelStepper
+  // AccelStepper config
   shoulderRotation.setMaxSpeed(SHOULDER_MAX_SPEED);
   shoulderRotation.setAcceleration(SHOULDER_ACCEL);
-  shoulderElevation.setMaxSpeed(SHOULDER_MAX_SPEED);
-  shoulderElevation.setAcceleration(SHOULDER_ACCEL);
+  shoulderFlexion.setMaxSpeed(SHOULDER_MAX_SPEED);
+  shoulderFlexion.setAcceleration(SHOULDER_ACCEL);
 
   Serial.println("[RIGHT_ARM] Ready for motion commands.");
 }
