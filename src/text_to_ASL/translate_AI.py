@@ -24,7 +24,7 @@ def phrase_find(tokens: list[str]) -> list[str]:
         ("PIECE", "CAKE"): "EASY",
         ("YOU", "WELCOME"): "YOURE-WELCOME",
         ("CATCH", "BALL"): "CATCH_BALL",
-        ("THROW", "BALL"): "THROW_BALL",
+        ("THROW", "BALL"): "THROW_BALL"
     }
     
     while i < len(tokens):
@@ -75,14 +75,14 @@ def translate_to_asl_gloss(text: str) -> list[str]:
         
         # Cleaning tokens
         questionWords = {"WHO", "WHAT", "WHEN", "WHERE", "WHY", "HOW"}
-        removeWords = {"BE", "POSS", "TO"}
+        removeWords = {"BE", "POSS", "TO", "HAVE"}
         removeExtensions = {"DESC-", "X-"}
         number_map = {
             "0": "ZERO", "1": "ONE", "2": "TWO", "3": "THREE", "4": "FOUR",
             "5": "FIVE", "6": "SIX", "7": "SEVEN", "8": "EIGHT", "9": "NINE",
             "10": "TEN"
         }
-        word_map = {"MY": "ME", "YOUR": "YOU", "X-I" : "ME"}
+        word_map = {"MY": "ME", "YOUR": "YOU", "X-I" : "ME", "WHAT'S" : "WHAT"}
         
         # 1. Remove unecessary words
         cleaned = [t for t in tokens if t not in removeWords]
