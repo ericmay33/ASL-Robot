@@ -82,7 +82,7 @@ def translate_to_asl_gloss(text: str) -> list[str]:
             "5": "FIVE", "6": "SIX", "7": "SEVEN", "8": "EIGHT", "9": "NINE",
             "10": "TEN"
         }
-        word_map = {"MY": "ME", "YOUR": "YOU", "X-I" : "ME", "WHAT'S" : "WHAT"}
+        word_map = {"MY": "ME", "YOUR": "YOU", "X-I" : "ME", "WHAT'S" : "WHAT", "HI" : "HELLO"}
         
         # 1. Remove unecessary words
         cleaned = [t for t in tokens if t not in removeWords]
