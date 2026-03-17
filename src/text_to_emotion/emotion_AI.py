@@ -2,11 +2,19 @@ from pathlib import Path
 from transformers import pipeline
 from PIL import Image, ImageTk
 import tkinter as tk
+import os
+from dotenv import load_dotenv
+from huggingface_hub import login
+
+load_dotenv()
+hf_token = os.getenv("EVAN_HUGGING_FACE_LOGIN")
+login(hf_token)
 
 classifier = pipeline(
     "text-classification",
     model="j-hartmann/emotion-english-distilroberta-base",
-    return_all_scores=True
+    return_all_scores=True,
+    local_files_only=True
 )
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -42,33 +50,80 @@ def make_window():
     return root
 
 # uses the hugging face model to get the emotion attached to the sentence
-def translate_to_emotion(text: str) -> str:
-    results = classifier(text)
-    top = max(results, key=lambda x: x["score"])
+def translate_to_emotions(text: str, window_size: int = 10) -> list[str]:
+    words = text.split()
+    emotions = []
 
-    if top["score"] < CONFIDENCE_THRESHOLD:
-        return "neutral"
+    question_words = {"who", "what", "when", "where", "why", "how"}
+    pain_words = {
+        "ache", "achey", "aching", "hurt", "hurting", "pain", "painful",
+        "injury", "injured", "sore", "soreness", "stabbing", "throbbing",
+        "burn", "burning", "cramp", "cramping", "stiff", "tender", "wound",
+        "bruise", "bruised", "cut", "cuts", "scrape", "sprain", "strained",
+        "migraine", "headache", "nausea", "vomit", "fever", "ill", "weak",
+        "exhausted", "fatigue", "dizzy", "dizziness"
+    }
 
-    return top["label"]
+    for i in range(0, len(words), window_size):
+        chunk_words = words[i:i + window_size]
+        chunk = " ".join(chunk_words)
 
-# takes the emotion received earlier and puts the png with the same name into the persistent window
-def show_emotion(emotion: str):
-    global current_image, previous_pil_image
+        if not chunk.strip():
+            continue
+
+        # Normalize to lowercase
+        lower_chunk_words = {w.lower() for w in chunk_words}
+
+        if lower_chunk_words & question_words:
+            emotions.append("question")
+            continue  # skip emotion classifier
+
+        if lower_chunk_words & pain_words:
+            emotions.append("pain")
+            continue
+
+        result = classifier(chunk)[0]
+
+        if result["score"] >= CONFIDENCE_THRESHOLD:
+            emotions.append(result["label"])
+        else:
+            emotions.append("neutral")
+
+    return emotions
+
+def show_emotion(emotions):
+    if isinstance(emotions, str):
+        emotions = [emotions]
+
+    play_emotion_sequence(emotions)
+
+def play_emotion_sequence(emotions, index=0):
+    if index >= len(emotions):
+        return  # Done
+
+    emotion = emotions[index]
 
     image_path = BASE_DIR / "src" / "cache" / "emotions" / f"{emotion}.jpg"
-
     new_image = Image.open(image_path).resize((screen_width, screen_height))
 
-    # First image (startup)
+    animate_transition(new_image, lambda: root.after(
+        800,  # hold time before next emotion
+        lambda: play_emotion_sequence(emotions, index + 1)
+    ))
+
+def animate_transition(new_image, on_complete=None):
+    global current_image, previous_pil_image
+
     if previous_pil_image is None:
         previous_pil_image = new_image
         current_image = ImageTk.PhotoImage(new_image)
         label.config(image=current_image)
+        if on_complete:
+            on_complete()
         return
 
-    # animation for fade between pics
     steps = 10
-    duration = 200  # total ms
+    duration = 200
     delay = duration // steps
 
     def fade(step=0):
@@ -76,6 +131,8 @@ def show_emotion(emotion: str):
 
         if step > steps:
             previous_pil_image = new_image
+            if on_complete:
+                on_complete()
             return
 
         alpha = step / steps
@@ -87,21 +144,3 @@ def show_emotion(emotion: str):
         root.after(delay, lambda: fade(step + 1))
 
     fade()
-
-# Test Loop
-# while True:
-#     if root is None:
-#         make_window()
-#     phrase = input("Enter phrase: ")
-
-#     if phrase == "close":
-#         break
-    
-#     emotion = translate_to_emotion(phrase)
-#     show_emotion(emotion)
-
-# Notes for ideas on how I could this better 
-# Extract the pictures from a video or some inf of database and store them in a schema defined for the emotions that they represent
-# create a dictionary that has the different frames, and cycle through them so instead of still images they're somewhat animated
-# Do this on the persistent window for the time that the sign is being executed
-# This could work for 24 fps most likely because that is move fps and looks nice and i think anything more than that is just too much

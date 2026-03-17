@@ -1,4 +1,4 @@
-from src.text_to_emotion.emotion_AI import translate_to_emotion
+from src.text_to_emotion.emotion_AI import translate_to_emotions
 
 def run_emotion(file_io, emotion_gui_queue):
     print("[EMOTION_IO] Started emotion processing loop.")
@@ -10,7 +10,7 @@ def run_emotion(file_io, emotion_gui_queue):
             line = file_io.pop_stt_emotion_line()
             print(f"[EMOTION_IO] Received: {line}")
 
-            emotion = translate_to_emotion(line)
+            emotion = translate_to_emotions(line)
 
             # Send emotion to GUI queue
             emotion_gui_queue.put(emotion)
