@@ -202,11 +202,12 @@ def get_joint_positions(q: np.ndarray) -> np.ndarray:
 def get_joint_positions_dual(
     q_left: np.ndarray,
     q_right: np.ndarray,
-    mirror_right: bool = True
+    mirror_left: bool = True
 ) -> tuple[np.ndarray, np.ndarray]:
     """
-    Compute both arms. Right arm is mirrored about X axis
-    (shoulder offset positive vs negative).
+    Compute both arms. The FK chain naturally models a right arm.
+    When mirror_left is True, the left arm's X positions are negated
+    and q2 is flipped so abduction goes outward to the left.
     Returns (left_positions, right_positions).
     """
 ```

@@ -224,24 +224,24 @@ def get_joint_positions(joint_angles: np.ndarray) -> np.ndarray:
 def get_joint_positions_dual(
     left_joint_angles: np.ndarray,
     right_joint_angles: np.ndarray,
-    mirror_right: bool = True,
+    mirror_left: bool = True,
 ) -> tuple[np.ndarray, np.ndarray]:
     """Compute joint positions for both arms with shoulder offsets.
 
-    Left shoulder is offset to -X, right shoulder to +X.
-    When mirror_right is True, the right arm's shoulder abduction angle (q2)
-    is negated so that abduction goes outward on both sides.
+    The FK chain naturally models a right arm (+X = outward). When mirror_left
+    is True, the left arm's X positions are negated and q2 is flipped so
+    abduction goes outward to the left.
 
     Args:
         left_joint_angles: 5-element array of left arm joint angles (radians).
         right_joint_angles: 5-element array of right arm joint angles (radians).
-        mirror_right: If True, negate q2 for the right arm.
+        mirror_left: If True, negate q2 for the left arm so it mirrors correctly.
 
     Returns:
         Tuple of (left_positions, right_positions), each a 6x3 array.
     """
     left_angles_adjusted = left_joint_angles.copy()
-    if mirror_right:
+    if mirror_left:
         left_angles_adjusted[1] = -left_angles_adjusted[1]
 
     left_positions = get_joint_positions(left_angles_adjusted)
