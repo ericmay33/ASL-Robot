@@ -13,3 +13,5 @@ Credentials.txt
 **/vosk/
 
 **/tokens_to_add.txt
+
+.pytest_cache/

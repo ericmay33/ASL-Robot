@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>FK Evaluation Report</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 2rem; color: #333; }
+  h1 { color: #1a1a2e; }
+  .meta { color: #666; margin-bottom: 1.5rem; }
+  .summary { display: flex; gap: 1rem; margin-bottom: 2rem; }
+  .summary-card { padding: 1rem 1.5rem; border-radius: 8px; font-size: 1.1rem; font-weight: 600; }
+  .card-pass { background: #d4edda; color: #155724; }
+  .card-fail { background: #f8d7da; color: #721c24; }
+  .card-warn { background: #fff3cd; color: #856404; }
+  .card-total { background: #d1ecf1; color: #0c5460; }
+  table { border-collapse: collapse; width: 100%; margin-bottom: 2rem; }
+  th, td { padding: 0.5rem 0.75rem; border: 1px solid #dee2e6; text-align: left; font-size: 0.9rem; }
+  th { background: #343a40; color: white; cursor: pointer; user-select: none; }
+  th:hover { background: #495057; }
+  .row-pass { background: #f0fff0; }
+  .row-fail { background: #fff0f0; }
+  .row-warn { background: #fffff0; }
+  .badge { padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; }
+  .badge-pass { background: #28a745; color: white; }
+  .badge-fail { background: #dc3545; color: white; }
+  .badge-warn { background: #ffc107; color: #333; }
+  h2 { margin-top: 2rem; color: #1a1a2e; }
+</style>
+</head>
+<body>
+<h1>FK Evaluation Report</h1>
+<p class="meta">Generated: 2026-03-21 16:59:57 &mdash; 261 sign(s) evaluated</p>
+<div class="summary">
+  <div class="summary-card card-total">Total: 261</div>
+  <div class="summary-card card-pass">Passed: 258</div>
+  <div class="summary-card card-fail">Failed: 3</div>
+  <div class="summary-card card-warn">Warnings: 0</div>
+</div>
+<table id="results">
+<thead>
+<tr>
+  <th onclick="sortTable(0)">Token</th>
+  <th onclick="sortTable(1)">Status</th>
+  <th onclick="sortTable(2)">Errors</th>
+  <th onclick="sortTable(3)">Warnings</th>
+  <th onclick="sortTable(4)">Max Vel (deg/s)</th>
+  <th onclick="sortTable(5)">Duration (s)</th>
+  <th onclick="sortTable(6)">Keyframes</th>
+  <th onclick="sortTable(7)">Arms</th>
+  <th>Error Summary</th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-pass"><td>SORRY</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>9.3</td><td>2.5</td><td>3</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>WHO</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>WALK</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>80.0</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>FATHER</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>1</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>START</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>60.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>TOGETHER</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>MEET</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>TRUST</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>COMMUNITY</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>40.0</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>COLD</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.0</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>KICK</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>5.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>GOOD</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>HOW</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>30.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>TWO</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>1.5</td><td>1</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>YESTERDAY</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>BABY</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>3</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>WAIT</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>7</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>HANDSHAKE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>40.0</td><td>2.5</td><td>5</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>GROUP</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>130.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>CREATE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>40.0</td><td>2.5</td><td>3</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>RELEASE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>90.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>POWERFUL</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>60.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>GOODBYE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>19.2</td><td>2.0</td><td>5</td><td>both</td><td></td></tr>
+<tr class="row-fail"><td>MORNING</td><td><span class="badge badge-fail">FAIL</span></td><td>1</td><td>0</td><td>50.0</td><td>2.0</td><td>2</td><td>both</td><td>right elbow_flexion = -50.0 deg < min -35.0 deg</td></tr>
+<tr class="row-pass"><td>WHY</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>10.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>MOTHER</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>1</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>DOG</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>60.0</td><td>2.0</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>DANCE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>40.0</td><td>2.5</td><td>6</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>DREAM</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>40.0</td><td>2.5</td><td>5</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>CARE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>36.0</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>BUILD</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>40.0</td><td>2.5</td><td>3</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>TRADE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>50.0</td><td>2.5</td><td>5</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>PRICE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>30.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>TRAIN</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.5</td><td>3</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>ME</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>1</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>SLEEP</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>STAND</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>1</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>OLD</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>4.0</td><td>2.0</td><td>3</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>NOW</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>BROTHER</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>READY</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>CARRY</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>30.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>HOLD</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>10.0</td><td>2.0</td><td>2</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>GRAB</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>CATCH</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>10.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>SPORT</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>40.0</td><td>2.5</td><td>5</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>WIN</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>57.1</td><td>2.0</td><td>3</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>FRIEND</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>66.7</td><td>2.5</td><td>6</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>THINK</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>REMEMBER</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>UNITY</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>SHARE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>60.0</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>GIVE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.5</td><td>2</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>COST</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>30.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>CATCH_BALL</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>50.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>GAME</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>80.0</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>FORCE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>15.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>NAME</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.0</td><td>5</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>FOOD</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>3</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>ANGRY</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>EXCITED</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>28.0</td><td>2.0</td><td>5</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>TIRED</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>17.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>YELLOW</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>51.6</td><td>2.0</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>BLACK</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>UNDERSTAND</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>KNOW</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>30.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>HONOR</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>40.0</td><td>2.0</td><td>3</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>BRAVE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>BUY</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>40.0</td><td>2.5</td><td>3</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>PUSH</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>EAT</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.0</td><td>4</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>SCHOOL</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>10.0</td><td>2.5</td><td>3</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>COME</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>40.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>SIT</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>15.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>HAND</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>1</td><td>left</td><td></td></tr>
+<tr class="row-pass"><td>EYE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>1</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>WRITE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>33.3</td><td>2.5</td><td>6</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>PAY</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>15.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>LIFT</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>30.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>THROW</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>160.0</td><td>2.0</td><td>3</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>NIGHT</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>DIFFERENT</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>60.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>BIG</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>13.6</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>TODAY</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>THANKS</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>7.2</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>HUG</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>COMFORT</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>HOT</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>110.0</td><td>2.0</td><td>2</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>LOSE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>81.2</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>COMPETE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>40.0</td><td>2.5</td><td>5</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>LOVE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>1</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>FOUR</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>1.5</td><td>1</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>HAPPY</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>3</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>RUN</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>READ</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>40.0</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>TEACH</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>10.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>FINISH</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>60.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>COURAGE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>SAFE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>110.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>SECURE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>1</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>YES</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>9.6</td><td>3.0</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>YOU</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>1</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>ONE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>1.5</td><td>1</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>WORK</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>40.0</td><td>2.0</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>RED</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>TOMORROW</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>FAMILY</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>30.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>PRAY</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>10.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>PEACE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>300.0</td><td>2.0</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>STRONG</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>FIX</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>FREE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>150.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>MIGHT</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>40.0</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>FINE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>WATER</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>3</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>HOME</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>MORE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>5</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>NEW</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.0</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>CAT</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.0</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>WELCOME</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>40.0</td><td>2.5</td><td>2</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>CELEBRATE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>60.0</td><td>3.0</td><td>7</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>HOPE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>BELIEVE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>200.0</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>SUPPORT</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>10.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>WARM</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>10.0</td><td>2.0</td><td>2</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>UNLOCK</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>300.0</td><td>2.0</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>PULL</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>EXERCISE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>40.0</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>FIT</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>ENERGY</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>90.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>MIGHTY_POWER</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>WHITE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>LESS</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>5.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>COOK</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>260.0</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>RECEIVE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>EXCHANGE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>50.0</td><td>2.5</td><td>8</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>CLOSE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>160.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>PASS</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>POWER</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>60.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>PLEASE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>2.7</td><td>2.5</td><td>3</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>STOP</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>6.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>WHERE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>33.3</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>GO</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>19.2</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>AGAIN</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>33.3</td><td>2.0</td><td>3</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>FACE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>30.0</td><td>2.0</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>PLAY</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>42.4</td><td>2.0</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>CONGRATULATIONS</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.5</td><td>5</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>TEAM</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>130.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>PROTECT</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>10.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>OPEN</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>90.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>THROW_BALL</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>180.0</td><td>2.0</td><td>3</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>SAD</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>GREEN</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>39.6</td><td>2.0</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>SMALL</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>13.6</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>LATER</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>60.0</td><td>2.5</td><td>2</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>LEARN</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>100.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>MUSIC</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>32.0</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>REPAIR</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>SELL</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>PRACTICE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.5</td><td>3</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>HEALTHY</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>STRENGTH</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>HELLO</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>2.4</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>NO</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>3.0</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>DRINK</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>JUMP</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>3</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>SISTER</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>EAR</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>1</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>BOOK</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>16.8</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>RESPECT</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>40.0</td><td>2.5</td><td>3</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>WASH</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>33.3</td><td>2.5</td><td>8</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>MAKE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>40.0</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>LOCK</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>300.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>BALL</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>1</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>MIGHTY</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>6.7</td><td>2.5</td><td>3</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>HELP</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>WHAT</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>10.0</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>THREE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>1.5</td><td>1</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>FIVE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>1.5</td><td>1</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>BLUE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>50.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>SAME</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>60.0</td><td>2.0</td><td>3</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>FORGET</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>10.0</td><td>2.5</td><td>2</td><td>right</td><td></td></tr>
+<tr class="row-fail"><td>CLAP</td><td><span class="badge badge-fail">FAIL</span></td><td>1</td><td>0</td><td>30.0</td><td>2.0</td><td>6</td><td>both</td><td>Last keyframe time 2.5 exceeds sign duration 2.0</td></tr>
+<tr class="row-pass"><td>CLEAN</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>MONEY</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>10.0</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>WHEN</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>HI</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>2.4</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>SIX</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>1.5</td><td>1</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>SEVEN</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>1.5</td><td>1</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>EIGHT</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>1.5</td><td>1</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>NINE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>1.5</td><td>1</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>TEN</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>1.5</td><td>1</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>MAD</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>LARGE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>13.6</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>PARENTS</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.0</td><td>2</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>HANDS</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>60.0</td><td>2.0</td><td>5</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>YOURE-WELCOME</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>140.0</td><td>2.5</td><td>2</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>GET</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>SWAP</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>50.0</td><td>2.5</td><td>8</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>HIS</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>5.0</td><td>2.5</td><td>2</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>HERS</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>5.0</td><td>2.5</td><td>2</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>THEIR</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.5</td><td>2</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>THEIRS</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.5</td><td>2</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>HIM</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>5.0</td><td>2.5</td><td>2</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>HER</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>5.0</td><td>2.5</td><td>2</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>HIMSELF</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>10.0</td><td>2.5</td><td>4</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>HERSELF</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>10.0</td><td>2.5</td><td>4</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>THEMSELF</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>10.0</td><td>2.5</td><td>4</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>ITSELF</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>THAT</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>10.0</td><td>2.5</td><td>2</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>NOT</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.0</td><td>2</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>LIKE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>50.0</td><td>2.5</td><td>2</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>THIS</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>10.0</td><td>2.5</td><td>2</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>MY</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>1</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>HE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>10.0</td><td>2.5</td><td>2</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>SHE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>10.0</td><td>2.5</td><td>2</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>IT</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>10.0</td><td>2.5</td><td>2</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>MOM</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>1</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>DAD</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>1</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>MUSCULAR</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>STUDENT</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>140.0</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>TEACHER</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>60.0</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>CLASS</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>160.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>TIME</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>40.0</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>SCIENCE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>40.0</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>ENGLISH</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>10.0</td><td>2.0</td><td>3</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>SPANISH</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>100.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>HISTORY</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>80.0</td><td>2.5</td><td>4</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>DRAW</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>33.3</td><td>2.5</td><td>6</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>ART</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>66.7</td><td>2.5</td><td>5</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>ARTIST</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>133.3</td><td>2.5</td><td>7</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>TEST</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>180.0</td><td>2.0</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>DISLIKE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>180.0</td><td>2.5</td><td>3</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>WHICH</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.0</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>MARRIED</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>5.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>O'CLOCK</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>40.0</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-fail"><td>BREAKFAST</td><td><span class="badge badge-fail">FAIL</span></td><td>1</td><td>0</td><td>200.0</td><td>2.0</td><td>4</td><td>both</td><td>right elbow_flexion = -50.0 deg < min -35.0 deg</td></tr>
+<tr class="row-pass"><td>LUNCH</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>180.0</td><td>2.0</td><td>3</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>DINNER</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.0</td><td>4</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>DESSERT</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.0</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>FORK</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.0</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>KNIFE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.0</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>SPOON</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>40.0</td><td>2.0</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>PLATE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>0.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>DOCTOR</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>10.0</td><td>2.0</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>NURSE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>10.0</td><td>2.0</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>HOSPITAL</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.0</td><td>4</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>SICK</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.5</td><td>6</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>BATHROOM</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.0</td><td>2</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>RESTROOM</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.0</td><td>4</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>NEED</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>15.0</td><td>2.0</td><td>2</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>HURT</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>60.0</td><td>2.5</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>PREVENT</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>5.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>FROM</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>40.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>FIRED</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>40.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>HAVE</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>10.0</td><td>2.0</td><td>2</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>MATH</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>80.0</td><td>2.5</td><td>4</td><td>both</td><td></td></tr>
+<tr class="row-pass"><td>MONDAY</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.0</td><td>4</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>TUESDAY</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.0</td><td>4</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>WEDNESDAY</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.0</td><td>4</td><td>right</td><td></td></tr>
+<tr class="row-pass"><td>THURSDAY</td><td><span class="badge badge-pass">PASS</span></td><td>0</td><td>0</td><td>20.0</td><td>2.0</td><td>4</td><td>right</td><td></td></tr>
+</tbody>
+</table>
+<h2>Common Failure Modes</h2>
+<ul><li><strong>joint_limit_violation</strong>: 2 occurrence(s)</li><li><strong>timing</strong>: 1 occurrence(s)</li></ul>
+<script>
+let sortDir = {};
+function sortTable(col) {
+  const table = document.getElementById("results");
+  const tbody = table.tBodies[0];
+  const rows = Array.from(tbody.rows);
+  const dir = sortDir[col] = !(sortDir[col] || false);
+  rows.sort((a, b) => {
+    let va = a.cells[col].textContent.trim();
+    let vb = b.cells[col].textContent.trim();
+    let na = parseFloat(va), nb = parseFloat(vb);
+    if (!isNaN(na) && !isNaN(nb)) return dir ? na - nb : nb - na;
+    return dir ? va.localeCompare(vb) : vb.localeCompare(va);
+  });
+  rows.forEach(r => tbody.appendChild(r));
+}
+</script>
+</body>
+</html>
