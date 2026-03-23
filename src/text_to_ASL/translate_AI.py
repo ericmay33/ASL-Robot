@@ -62,7 +62,7 @@ def translate_to_asl_gloss(text: str) -> list[str]:
             input_ids, 
             max_length=128, 
             num_beams=4, # Use beam search for better translation quality
-            temperature=0.1
+            temperature=0.6
         )
         
         # Decode the output
@@ -75,7 +75,7 @@ def translate_to_asl_gloss(text: str) -> list[str]:
         
         # Cleaning tokens
         questionWords = {"WHO", "WHAT", "WHEN", "WHERE", "WHY", "HOW"}
-        removeWords = {"BE", "POSS", "TO", "HAVE"}
+        removeWords = {"BE", "POSS", "TO", "HAVE", "AT"}
         removeExtensions = {"DESC-", "X-"}
         number_map = {
             "0": "ZERO", "1": "ONE", "2": "TWO", "3": "THREE", "4": "FOUR",
