@@ -463,3 +463,203 @@ ASL-Robot/
 ```
 
 ---
+
+## 12. FK Simulation & Evaluation Tool
+
+### 12a. Overview
+
+The FK (Forward Kinematics) tool is a Python module at `src/fk_tool/` that simulates and evaluates the robot's arm motion scripts before deploying them to hardware. It is a direct port of Professor LaMack's MATLAB `PlotRobLinks` forward kinematics script into a full-featured, batch-capable pipeline.
+
+**Three core use cases:**
+
+1. **Sign Validation** — Verify that motion scripts in the database are physically plausible (joint limits, reachability, timing) before deploying to hardware.
+2. **AI Model Evaluation** — Batch-test AI-generated motion scripts (from Professor Lin's model) against reference signs from the database, producing quantitative metrics for the paper (joint tracking error, execution success rates).
+3. **Visual Demonstration** — Generate 3D animated visualizations of signs for presentations, the paper, and human evaluation.
+
+---
+
+### 12b. Module Structure
+
+```
+src/fk_tool/
+├── __init__.py          # Package marker
+├── __main__.py          # Entry point for python -m src.fk_tool
+├── config.py            # Robot dimensions, joint calibration, evaluation thresholds, visualization defaults
+├── models.py            # Dataclasses: ParsedSign, ParsedKeyframe, EvalIssue, SignEvaluation
+├── fk_engine.py         # Numpy FK engine — 5-DOF kinematic chain (direct MATLAB port)
+├── servo_mapper.py      # Bidirectional servo degrees ↔ joint radians conversion
+├── sign_parser.py       # Schema validation, keyframe normalization, hold-forward resolution
+├── loaders.py           # JSON file loader, MongoDB loader, AI output loader
+├── evaluator.py         # 6 evaluation checks + sign comparison engine (AI vs reference)
+├── visualizer.py        # Matplotlib 3D plotting: static poses, animated signs, comparison, batch thumbnails
+├── report.py            # Console summary, CSV export, HTML report, comparison reporting
+├── cli.py               # Argparse CLI with evaluate, visualize, compare subcommands
+└── tests/
+    ├── test_smoke.py        # FK engine, servo mapper, sign loading (9 tests)
+    ├── test_evaluator.py    # Evaluation checks: valid, bad servo, bad timing, batch (6 tests)
+    └── test_compare.py      # AI vs reference comparison logic (7 tests)
+```
+
+**Total: 22 unit and integration tests.**
+
+---
+
+### 12c. FK Kinematic Chain
+
+The tool models a **5 degree-of-freedom (DOF) kinematic chain** per arm using homogeneous 4x4 transformation matrices chained together. This is a line-for-line port of the MATLAB `PlotRobLinks` function.
+
+| Joint | Name                 | Motion                       | Transform Details                                    |
+|-------|----------------------|------------------------------|------------------------------------------------------|
+| q1    | Shoulder swing       | Flexion/extension            | Rotation about X axis, no translation                |
+| q2    | Shoulder abduction   | Raise arm away from body     | Rotation about Y axis, translate X by 1.5 inches     |
+| q3    | Elbow flexion        | Bicep curl motion            | Rotation about X axis, translate Z by -15 inches     |
+| q4    | Wrist flexion        | Wrist bend (Italian chef)    | Rotation about X axis, translate Z by -10 inches     |
+| q5    | Wrist pronation      | Wrist rotation (pour soup)   | Rotation about Z axis, translate Z by -1.5 inches    |
+
+**Chain computation:** `T_world = T01 @ T12 @ T23 @ T34 @ T45`. Joint positions are extracted from column 3 (translation vector) of each cumulative transform.
+
+**Servo group to joint mapping:**
+
+| Servo Group | Joint         |
+|-------------|---------------|
+| LS[0] / RS[0] | q1 — shoulder swing |
+| LS[1] / RS[1] | q2 — shoulder abduction |
+| LE[0] / RE[0] | q3 — elbow flexion |
+| LW[0] / RW[0] | q4 — wrist flexion |
+| LW[1] / RW[1] | q5 — wrist pronation |
+| L / R (5 each) | Fingers — not in FK model, stored as metadata |
+
+**Link lengths (inches):** Shoulder offset = 1.5, Upper arm = 15.0, Forearm = 10.0, Wrist = 1.5. Shoulder X offset from body center = 7.0 per side.
+
+---
+
+### 12d. Servo-to-Radian Mapping
+
+The default conversion formula is:
+
+```
+joint_rad = (servo_deg - neutral_deg) * scale * (pi / 180)
+```
+
+**Current default assumption:** `neutral_deg = 90`, `scale = 1.0` for all joints. This means servo 90° corresponds to 0 radians (arm hanging straight down), servo 0° = -π/2 rad, servo 180° = +π/2 rad.
+
+This mapping is configurable per-joint in `config.py` via the `JOINT_CALIBRATION` dictionary, which stores `neutral_servo_deg`, `scale`, `min_rad`, and `max_rad` for each of the 5 joints.
+
+> **ACTION ITEM — REQUIRES CONFIRMATION FROM PROFESSOR LAMACK / ENGINEERING TEAM:**
+> The default 90° = 0 rad mapping is an assumption. The actual neutral positions, scale factors (some joints may be inverted), and mechanical limits need to be measured on the physical robot. Until confirmed, the tool produces correct *relative* motion but absolute joint positions may be offset. Changing the calibration requires editing only `config.py` — all other modules read from it.
+
+---
+
+### 12e. CLI Usage
+
+Run with `python -m src.fk_tool <subcommand>`.
+
+**Evaluate — Check signs for physical plausibility:**
+
+```bash
+# Evaluate all signs from a JSON file, generate HTML report
+python -m src.fk_tool evaluate --input src/signs/signs_to_seed.json --report output.html
+
+# Evaluate a single sign
+python -m src.fk_tool evaluate --input src/signs/signs_to_seed.json --token HELLO
+
+# Evaluate from MongoDB (all signs)
+python -m src.fk_tool evaluate --source mongodb --report full_eval.html
+
+# Evaluate specific tokens from MongoDB
+python -m src.fk_tool evaluate --source mongodb --tokens HELLO THANKS PLEASE --report subset.csv
+```
+
+**Visualize — 3D stick-figure rendering:**
+
+```bash
+# Static first-keyframe plot
+python -m src.fk_tool visualize --input src/signs/signs_to_seed.json --token HELLO --save hello.png
+
+# Animated sign (saves as GIF)
+python -m src.fk_tool visualize --input src/signs/signs_to_seed.json --token HELLO --animate --save hello.gif
+
+# Visualize directly from MongoDB
+python -m src.fk_tool visualize --source mongodb --token HELLO --animate --save hello.gif
+```
+
+**Compare — AI-generated vs reference signs:**
+
+```bash
+# Compare AI output against reference JSON file
+python -m src.fk_tool compare --ai-input ai_signs.json --ref-input src/signs/signs_to_seed.json --report comparison.html
+
+# Compare AI output against MongoDB reference
+python -m src.fk_tool compare --ai-input ai_signs.json --ref-source mongodb --report comparison.csv
+```
+
+Report format is auto-detected: `.html` generates a self-contained sortable HTML report, `.csv` generates a spreadsheet-compatible CSV.
+
+---
+
+### 12f. Evaluation Metrics
+
+The evaluator runs 6 checks on each sign. Each produces issues at FAIL level (sign is physically implausible) or WARN level (sign is suspicious but not broken).
+
+| Check                     | Level | Description                                                       |
+|---------------------------|-------|-------------------------------------------------------------------|
+| Servo range               | FAIL  | Any servo value outside [0, 180] degrees                          |
+| Joint limits              | FAIL  | Any joint angle outside calibrated min/max radians                |
+| Timing                    | FAIL  | Non-monotonic keyframe times, first time ≠ 0.0, last ≠ duration  |
+| Angular velocity          | WARN  | Any joint moves faster than 500 deg/s between keyframes           |
+| Duration                  | WARN  | Sign duration outside [0.3s, 5.0s] range                         |
+| Keyframe completeness     | WARN  | First keyframe has no servo group data at all                     |
+
+A sign **passes** if it has zero FAIL-level issues. Summary metrics include: max angular velocity, number of keyframes, duration, and which arm(s) are used.
+
+---
+
+### 12g. AI Comparison Metrics
+
+When comparing AI-generated signs against database reference signs (matched by token):
+
+| Metric                 | Description                                                                  |
+|------------------------|------------------------------------------------------------------------------|
+| Joint angle MAE        | Mean absolute error in radians across all joints and keyframes (nearest-time matching). This is the "joint tracking error" metric for the paper. |
+| Duration difference    | Absolute difference in sign duration (seconds)                               |
+| Keyframe count diff    | Absolute difference in number of keyframes                                   |
+| Arm agreement          | Whether both signs use the same arm(s) — boolean                             |
+| Both passed            | Whether both AI and reference signs pass evaluation independently            |
+
+The comparison report ranks signs by MAE to identify the worst-accuracy AI translations.
+
+---
+
+### 12h. Configuration
+
+All physical parameters, calibration values, and evaluation thresholds are centralized in `src/fk_tool/config.py`. Key constants:
+
+| Constant                          | Value    | Description                              |
+|-----------------------------------|----------|------------------------------------------|
+| `SHOULDER_OFFSET_LENGTH`          | 1.5 in   | T12 translation (shoulder joint spacing) |
+| `UPPER_ARM_LENGTH`                | 15.0 in  | T23 translation (shoulder to elbow)      |
+| `FOREARM_LENGTH`                  | 10.0 in  | T34 translation (elbow to wrist)         |
+| `WRIST_LENGTH`                    | 1.5 in   | T45 translation (wrist to hand tip)      |
+| `SHOULDER_X_OFFSET`               | 7.0 in   | Distance from body center to shoulder    |
+| `SERVO_MIN_DEGREES`               | 0        | Minimum valid servo angle                |
+| `SERVO_MAX_DEGREES`               | 180      | Maximum valid servo angle                |
+| `MAX_ANGULAR_VELOCITY_DEG_PER_SEC`| 500      | Physical servo speed limit               |
+| `MIN_SIGN_DURATION_SEC`           | 0.3 s    | Shortest reasonable sign                 |
+| `MAX_SIGN_DURATION_SEC`           | 5.0 s    | Longest reasonable sign                  |
+
+Joint calibration defaults: all joints use `neutral = 90°`, `scale = 1.0`. Elbow range is [0, 135°], wrist flexion is [±70°], all others are [±90°].
+
+---
+
+### 12i. Pending Calibration
+
+The following items must be confirmed before the tool's absolute joint positions match the physical robot. **The tool works correctly for relative motion and all evaluation checks today** — only absolute positioning requires calibration.
+
+1. **Servo neutral point per joint** — Is 90° truly the neutral (0 radian) position for every servo? Some servos may have different neutral positions.
+2. **Scale factor and direction per joint** — Are any joints inverted (servo increase = joint angle decrease)? This would require `scale = -1.0` for that joint in `config.py`.
+3. **Actual mechanical joint limits** — The servos support 0-180° but the physical arm may have tighter limits. Need measured values per joint.
+4. **Right arm mirroring convention** — The tool currently negates q2 (shoulder abduction) for the right arm so that abduction goes outward on both sides. This needs visual confirmation with a known two-handed sign.
+
+**Impact if uncalibrated:** Signs will look correct in relative motion (movements track properly) but may be offset or flipped in absolute position. **Fix is a one-file change** in `config.py` — no other module needs modification.
+
+---
