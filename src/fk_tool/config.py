@@ -13,16 +13,16 @@ from dataclasses import dataclass
 # Link lengths (inches) — matching Professor LaMack's MATLAB PlotRobotLinks
 # ---------------------------------------------------------------------------
 
-SHOULDER_OFFSET_LENGTH: float = 1.5      # T12 translation along X (shoulder joint spacing)
-UPPER_ARM_LENGTH: float = 15.0           # T23 translation along -Z (shoulder to elbow)
-FOREARM_LENGTH: float = 10.0             # T34 translation along -Z (elbow to wrist)
-WRIST_LENGTH: float = 1.5               # T45 translation along -Z (wrist to hand tip)
+SHOULDER_OFFSET_LENGTH: float = 2.75      # T12 translation along X (shoulder joint spacing)
+UPPER_ARM_LENGTH: float = 9.0             # T23 translation along -Z (shoulder to elbow)
+FOREARM_LENGTH: float = 10.75             # T34 translation along -Z (elbow to wrist)
+WRIST_LENGTH: float = 3.75                # T45 translation along -Z (wrist to hand tip)
 
 # ---------------------------------------------------------------------------
 # Shoulder offsets from body center (for dual-arm rendering)
 # ---------------------------------------------------------------------------
 
-SHOULDER_X_OFFSET: float = 7.0  # inches from centerline to each shoulder
+SHOULDER_X_OFFSET: float = 6.0  # inches from centerline to each shoulder
 
 
 # ---------------------------------------------------------------------------
@@ -48,13 +48,39 @@ class JointCalibration:
 
 # Default calibration: servo 90 deg = 0 rad, linear 1:1, symmetric limits.
 # ACTION ITEM: Confirm with Professor LaMack / engineering team.
-JOINT_CALIBRATION: dict[str, JointCalibration] = {
+#
+# NOTE: Left and right arms can have different calibration values.
+LEFT_JOINT_CALIBRATION: dict[str, JointCalibration] = {
     "shoulder_swing":     JointCalibration(neutral_servo_deg=90.0, scale=1.0, min_rad=-math.pi / 2, max_rad=math.pi / 2),
     "shoulder_abduction": JointCalibration(neutral_servo_deg=90.0, scale=1.0, min_rad=-math.pi / 2, max_rad=math.pi / 2),
     "elbow_flexion":      JointCalibration(neutral_servo_deg=90.0, scale=1.0, min_rad=-0.6109,       max_rad=2.356),
     "wrist_flexion":      JointCalibration(neutral_servo_deg=90.0, scale=1.0, min_rad=-math.pi / 2, max_rad=math.pi / 2),
     "wrist_pronation":    JointCalibration(neutral_servo_deg=90.0, scale=1.0, min_rad=-math.pi / 2, max_rad=math.pi / 2),
 }
+
+RIGHT_JOINT_CALIBRATION: dict[str, JointCalibration] = {
+    "shoulder_swing":     JointCalibration(neutral_servo_deg=90.0, scale=1.0, min_rad=-math.pi / 2, max_rad=math.pi / 2),
+    "shoulder_abduction": JointCalibration(neutral_servo_deg=90.0, scale=1.0, min_rad=-math.pi / 2, max_rad=math.pi / 2),
+    "elbow_flexion":      JointCalibration(neutral_servo_deg=90.0, scale=1.0, min_rad=-0.6109,       max_rad=2.356),
+    "wrist_flexion":      JointCalibration(neutral_servo_deg=90.0, scale=1.0, min_rad=-math.pi / 2, max_rad=math.pi / 2),
+    "wrist_pronation":    JointCalibration(neutral_servo_deg=90.0, scale=1.0, min_rad=-math.pi / 2, max_rad=math.pi / 2),
+}
+
+
+def joint_calibration_for_side(side: str) -> dict[str, JointCalibration]:
+    """Return the appropriate joint calibration map for one arm.
+
+    Args:
+        side: "left" or "right"
+
+    Returns:
+        The per-joint calibration dict for that arm.
+    """
+    if side == "left":
+        return LEFT_JOINT_CALIBRATION
+    if side == "right":
+        return RIGHT_JOINT_CALIBRATION
+    raise ValueError(f"side must be 'left' or 'right', got '{side}'")
 
 # Ordered list of joint names matching the 5-DOF kinematic chain (q1..q5).
 JOINT_NAMES: list[str] = [

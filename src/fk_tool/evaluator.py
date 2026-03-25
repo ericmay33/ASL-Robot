@@ -199,8 +199,8 @@ def _check_arm_joint_limits(
             continue
         for joint_name, servo_index in config.SERVO_GROUP_TO_JOINTS[group_key]:
             servo_value = servo_groups[group_key][servo_index]
-            joint_rad = servo_degrees_to_radians(servo_value, joint_name)
-            calibration = config.JOINT_CALIBRATION[joint_name]
+            joint_rad = servo_degrees_to_radians(servo_value, joint_name, side)
+            calibration = config.joint_calibration_for_side(side)[joint_name]
 
             if joint_rad < calibration.min_rad:
                 issues.append(EvalIssue(
