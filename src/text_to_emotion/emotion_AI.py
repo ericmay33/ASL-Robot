@@ -23,6 +23,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 CONFIDENCE_THRESHOLD = 0.70
 DISPLAY_ROTATION_DEGREES = 90
 BACKGROUND_COLOR = (255, 255, 255)
+FORCE_PORTRAIT_LAYOUT = True
+FACE_ZOOM = 1.5
 
 root = None
 label = None
@@ -40,12 +42,20 @@ def make_window():
     root = tk.Tk()
     root.title("ASL Robot Emotion Display")
 
-    screen_width = root.winfo_screenwidth()
-    screen_height = root.winfo_screenheight()
+    detected_width = root.winfo_screenwidth()
+    detected_height = root.winfo_screenheight()
+
+    if FORCE_PORTRAIT_LAYOUT:
+        screen_width = min(detected_width, detected_height)
+        screen_height = max(detected_width, detected_height)
+    else:
+        screen_width = detected_width
+        screen_height = detected_height
 
     root.geometry(f"{screen_width}x{screen_height}")
+    root.configure(bg="white")
 
-    label = tk.Label(root)
+    label = tk.Label(root, bg="white")
     label.pack(fill="both", expand=True)
 
     root.update_idletasks()  # Ensure window is ready
@@ -138,26 +148,25 @@ def play_emotion_sequence(emotions, index=0, on_complete=None):
     emotion = emotions[index]
 
     image_path = BASE_DIR / "src" / "cache" / "emotions" / f"{emotion}.png"
-    new_image = prepare_image_for_screen(image_path)
+    image = Image.open(image_path).convert("RGB")
+
+    # if DISPLAY_ROTATION_DEGREES % 360 != 0:
+    #     image = image.rotate(DISPLAY_ROTATION_DEGREES, expand=True)
+
+    fitted = ImageOps.contain(image, (screen_width, screen_height), Image.Resampling.LANCZOS)
+    if FACE_ZOOM > 1.0:
+        zoomed_width = int(fitted.width * FACE_ZOOM)
+        zoomed_height = int(fitted.height * FACE_ZOOM)
+        fitted = fitted.resize((zoomed_width, zoomed_height), Image.Resampling.LANCZOS)
+    new_image = Image.new("RGB", (screen_width, screen_height), BACKGROUND_COLOR)
+    paste_x = (screen_width - fitted.width) // 2
+    paste_y = (screen_height - fitted.height) // 2
+    new_image.paste(fitted, (paste_x, paste_y))
 
     animate_transition(new_image, lambda: root.after(
         800,  # hold time before next emotion
         lambda: play_emotion_sequence(emotions, index + 1, on_complete=on_complete)
     ))
-
-def prepare_image_for_screen(image_path):
-    image = Image.open(image_path).convert("RGB")
-
-    if DISPLAY_ROTATION_DEGREES % 360 != 0:
-        image = image.rotate(DISPLAY_ROTATION_DEGREES, expand=True)
-
-    # Preserve proportions by fitting inside the screen and letterboxing.
-    fitted = ImageOps.contain(image, (screen_width, screen_height), Image.Resampling.LANCZOS)
-    output = Image.new("RGB", (screen_width, screen_height), BACKGROUND_COLOR)
-    paste_x = (screen_width - fitted.width) // 2
-    paste_y = (screen_height - fitted.height) // 2
-    output.paste(fitted, (paste_x, paste_y))
-    return output
 
 def animate_transition(new_image, on_complete=None):
     global current_image, previous_pil_image
