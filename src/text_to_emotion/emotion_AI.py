@@ -1,6 +1,8 @@
 from pathlib import Path
+from collections import deque
+import string
 from transformers import pipeline
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageOps
 import tkinter as tk
 import os
 from dotenv import load_dotenv
@@ -19,6 +21,8 @@ classifier = pipeline(
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 CONFIDENCE_THRESHOLD = 0.70
+DISPLAY_ROTATION_DEGREES = 90
+BACKGROUND_COLOR = (255, 255, 255)
 
 root = None
 label = None
@@ -26,6 +30,8 @@ screen_width = None
 screen_height = None
 current_image = None
 previous_pil_image = None
+pending_emotions = deque()
+is_playing = False
 
 # creates a persistent window that is the size of the screen
 def make_window():
@@ -56,12 +62,20 @@ def translate_to_emotions(text: str, window_size: int = 10) -> list[str]:
 
     question_words = {"who", "what", "when", "where", "why", "how"}
     pain_words = {
-        "ache", "achey", "aching", "hurt", "hurting", "pain", "painful",
-        "injury", "injured", "sore", "soreness", "stabbing", "throbbing",
-        "burn", "burning", "cramp", "cramping", "stiff", "tender", "wound",
-        "bruise", "bruised", "cut", "cuts", "scrape", "sprain", "strained",
+        "ache", "aches", "achey", "aching", "hurt", "hurts", "hurting", "pain", "painful",
+        "injury", "injuried","injured", "sore", "soreness", "stabbing", "stabbings", "throbbing",
+        "burn", "burning", "cramp", "cramps","cramping", "stiff", "stiffness", "tender", "tenderness", "wound", "wounds",
+        "bruise", "bruises", "bruised", "cut", "cuts", "scrape", "scrapes", "scraping", "sprain", "strains", "strained",
         "migraine", "headache", "nausea", "vomit", "fever", "ill", "weak",
         "exhausted", "fatigue", "dizzy", "dizziness"
+    }
+
+    teeth_words = {
+        "tooth", "teeth", "toothache", "brush",
+        # emphasis / intensifier words (use teeth face for emphasis)
+        "really", "very", "so", "too", "super", "extremely", "incredibly",
+        "totally", "absolutely", "definitely", "seriously", "literally",
+        "deeply", "strongly", "quite", "especially", "utterly", "completely",
     }
 
     for i in range(0, len(words), window_size):
@@ -71,8 +85,8 @@ def translate_to_emotions(text: str, window_size: int = 10) -> list[str]:
         if not chunk.strip():
             continue
 
-        # Normalize to lowercase
-        lower_chunk_words = {w.lower() for w in chunk_words}
+        # Normalize to lowercase and strip punctuation for reliable keyword matching.
+        lower_chunk_words = {w.lower().strip(string.punctuation) for w in chunk_words if w.strip(string.punctuation)}
 
         if lower_chunk_words & question_words:
             emotions.append("question")
@@ -80,6 +94,10 @@ def translate_to_emotions(text: str, window_size: int = 10) -> list[str]:
 
         if lower_chunk_words & pain_words:
             emotions.append("pain")
+            continue
+
+        if lower_chunk_words & teeth_words:
+            emotions.append("teeth")
             continue
 
         result = classifier(chunk)[0]
@@ -92,24 +110,54 @@ def translate_to_emotions(text: str, window_size: int = 10) -> list[str]:
     return emotions
 
 def show_emotion(emotions):
+    global is_playing
+
     if isinstance(emotions, str):
         emotions = [emotions]
 
-    play_emotion_sequence(emotions)
+    for emotion in emotions:
+        pending_emotions.append(emotion)
 
-def play_emotion_sequence(emotions, index=0):
+    if not is_playing:
+        is_playing = True
+        play_emotion_sequence([pending_emotions.popleft()], on_complete=_play_next_pending_emotion)
+
+def _play_next_pending_emotion():
+    global is_playing
+    if pending_emotions:
+        play_emotion_sequence([pending_emotions.popleft()], on_complete=_play_next_pending_emotion)
+    else:
+        is_playing = False
+
+def play_emotion_sequence(emotions, index=0, on_complete=None):
     if index >= len(emotions):
+        if on_complete:
+            on_complete()
         return  # Done
 
     emotion = emotions[index]
 
-    image_path = BASE_DIR / "src" / "cache" / "emotions" / f"{emotion}.jpg"
-    new_image = Image.open(image_path).resize((screen_width, screen_height))
+    image_path = BASE_DIR / "src" / "cache" / "emotions" / f"{emotion}.png"
+    new_image = prepare_image_for_screen(image_path)
 
     animate_transition(new_image, lambda: root.after(
         800,  # hold time before next emotion
-        lambda: play_emotion_sequence(emotions, index + 1)
+        lambda: play_emotion_sequence(emotions, index + 1, on_complete=on_complete)
     ))
+
+def prepare_image_for_screen(image_path):
+    image = Image.open(image_path).convert("RGB")
+
+    if DISPLAY_ROTATION_DEGREES % 360 != 0:
+        image = image.rotate(DISPLAY_ROTATION_DEGREES, expand=True)
+
+    # Preserve proportions by fitting inside the screen and letterboxing.
+    fitted = ImageOps.contain(image, (screen_width, screen_height), Image.Resampling.LANCZOS)
+    output = Image.new("RGB", (screen_width, screen_height), BACKGROUND_COLOR)
+    paste_x = (screen_width - fitted.width) // 2
+    paste_y = (screen_height - fitted.height) // 2
+    output.paste(fitted, (paste_x, paste_y))
+    return output
 
 def animate_transition(new_image, on_complete=None):
     global current_image, previous_pil_image
