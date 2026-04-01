@@ -88,7 +88,7 @@ def get_arms_for_script(script):
         return True, True
     return send_to_left, send_to_right
 
-def run_motion(file_io, emotion_gui_queue=None, left_port="COM3", right_port="COM6", baud=115200):
+def run_motion(file_io, emotion_gui_queue=None, left_port="COM5", right_port="COM6", baud=115200):
     # Connect to both controllers
     ser_left = connect_serial(left_port, baud, "LEFT")
     ser_right = connect_serial(right_port, baud, "RIGHT")
