@@ -88,7 +88,7 @@ def get_arms_for_script(script):
         return True, True
     return send_to_left, send_to_right
 
-def run_motion(file_io, left_port="COM5", right_port="COM6", baud=115200):
+def run_motion(file_io, emotion_gui_queue=None, left_port="COM5", right_port="COM6", baud=115200):
     # Connect to both controllers
     ser_left = connect_serial(left_port, baud, "LEFT")
     ser_right = connect_serial(right_port, baud, "RIGHT")
@@ -180,6 +180,9 @@ def run_motion(file_io, left_port="COM5", right_port="COM6", baud=115200):
         # Pop all motion scripts from the queue (skip if shutting down)
         if not file_io.motion_queue.empty() and not file_io.shutdown.is_set():
             script = file_io.pop_motion_script()
+            if emotion_gui_queue is not None and not file_io.motion_emotion_queue.empty():
+                emotion = file_io.pop_motion_emotion()
+                emotion_gui_queue.put(emotion)
             # Ensure keyframes is always an array for Arduino parsing
             if isinstance(script.get("keyframes"), dict):
                 script["keyframes"] = list(script["keyframes"].values())

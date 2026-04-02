@@ -94,6 +94,8 @@ GOOGLE_APPLICATION_CREDENTIALS="stt_key_file.json"
 GEMINI_API_KEY="your-gemini-api-key-here"
 ```
 
+For **`python -m src.testing.sign_demo`** only, the sign demo module enables minimal validation: **`MONGODB_URI`** and **`MONGODB_DB_NAME`** are sufficient (no Google STT or Gemini). The full app (`src.main`) still requires all variables above.
+
 ### 3. Google Cloud STT Credentials
 
 Place your Google Cloud service account JSON key file in the project root as `stt_key_file.json`. This is referenced by the `GOOGLE_APPLICATION_CREDENTIALS` env var. Ensure both `stt_key_file.json` and `.env` are in `.gitignore`.
@@ -124,6 +126,27 @@ python -B -m src.main
 - Speak your sentence — the robot translates and signs it
 - Say "fred stop" or "thank you fred" to deactivate
 - **Ctrl+C** exits cleanly (threads stop, serial ports close)
+
+## Sign demo (modular testing)
+
+Run one sign at a time from the terminal without speech, translation workers, or the emotion UI. Only MongoDB resolution (plus optional English→gloss T5 in English mode) and the motion serial thread start.
+
+```bash
+python -B -m src.testing.sign_demo
+```
+
+- By default each line is **English**; only the **first** ASL gloss token from translation is executed (use `--all-tokens` for the whole phrase).
+- **`--gloss`** treats the line as DB token(s) (e.g. `HELLO`); fast and skips the T5 model.
+- **`--dry-run`** prints motion JSON only (no serial).
+- Serial ports: **`--left-port`** / **`--right-port`**, or env **`ASL_LEFT_PORT`** / **`ASL_RIGHT_PORT`** (defaults match `motion_io`: `COM3`, `COM6`).
+
+Examples:
+
+```bash
+python -B -m src.testing.sign_demo --gloss
+python -B -m src.testing.sign_demo --gloss --all-tokens
+python -B -m src.testing.sign_demo --dry-run --gloss
+```
 
 ## Forward Kinematics Tool
 

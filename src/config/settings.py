@@ -1,6 +1,10 @@
 import os
 import json
 from dotenv import load_dotenv
+
+
+def _env_truthy(name: str) -> bool:
+    return os.getenv(name, "").strip().lower() in ("1", "true", "yes", "on")
 from typing import Optional, Dict, Any
 
 SETTINGS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -37,6 +41,18 @@ class Settings:
     def validate(self):
         missing = []
         stt_engine = os.getenv("STT_ENGINE", "cloud").lower().strip()
+
+        # Sign demo CLI: Mongo only (no STT / Gemini / Google STT required)
+        if _env_truthy("ASL_SIGN_DEMO"):
+            if not self.MONGODB_URI:
+                missing.append("MONGODB_URI")
+            if not self.MONGODB_DB_NAME:
+                missing.append("MONGODB_DB_NAME")
+            if missing:
+                raise ValueError(
+                    f"Missing environment variables/invalid configuration: {', '.join(missing)}"
+                )
+            return
 
         if not self.MONGODB_URI:
             missing.append("MONGODB_URI")

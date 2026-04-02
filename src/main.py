@@ -1,4 +1,5 @@
 import sys
+import time
 from threading import Thread
 from queue import Queue
 import tkinter as tk
@@ -6,13 +7,13 @@ import tkinter as tk
 from src.io.fileIO import FileIOManager
 from src.io.stt_io import run_stt
 from src.io.ai_io import run_ai
-from src.io.emotion_io import run_emotion
 from src.io.db_io import run_database
 from src.io.motion_io import run_motion
 
 from src.text_to_emotion.emotion_AI import make_window, show_emotion
 JOIN_TIMEOUT = 1.0
 JOIN_MAX_WAIT = 5.0
+EMOTION_IDLE_TIMEOUT_S = 3.0
 
 if __name__ == "__main__":
     file_io = FileIOManager()
@@ -26,24 +27,38 @@ if __name__ == "__main__":
     # Start worker threads
     stt_thread = Thread(target=run_stt, args=(file_io,), daemon=True)
     ai_thread = Thread(target=run_ai, args=(file_io,), daemon=True)
-    emotion_thread = Thread(target=run_emotion, args=(file_io, emotion_gui_queue), daemon=True)
     db_thread = Thread(target=run_database, args=(file_io,), daemon=True)
-    motion_thread = Thread(target=run_motion, args=(file_io,), daemon=True)
+    motion_thread = Thread(target=run_motion, args=(file_io, emotion_gui_queue), daemon=True)
     
 
     stt_thread.start()
     ai_thread.start()
-    emotion_thread.start()
     db_thread.start()
     motion_thread.start()
 
     print("[MAIN] System initialized. Listening for speech... (Ctrl+C to exit)")
 
+    emotion_state = {
+        "last_update": time.time(),
+        "current": "neutral",
+    }
+
     # gui polling
     def poll_emotion_queue():
-        while not emotion_gui_queue.empty():
+        if not emotion_gui_queue.empty():
             emotion = emotion_gui_queue.get()
             show_emotion(emotion)
+            emotion_state["last_update"] = time.time()
+            emotion_state["current"] = emotion
+
+        if (
+            emotion_gui_queue.empty()
+            and emotion_state["current"] != "neutral"
+            and (time.time() - emotion_state["last_update"]) >= EMOTION_IDLE_TIMEOUT_S
+        ):
+            show_emotion("neutral")
+            emotion_state["current"] = "neutral"
+            emotion_state["last_update"] = time.time()
 
         root.after(50, poll_emotion_queue)  # check again in 50ms
 
