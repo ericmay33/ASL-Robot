@@ -53,17 +53,17 @@ class JointCalibration:
 LEFT_JOINT_CALIBRATION: dict[str, JointCalibration] = {
     "shoulder_swing":     JointCalibration(neutral_servo_deg=90.0, scale=1.0, min_rad=-math.pi / 2, max_rad=math.pi / 2),
     "shoulder_abduction": JointCalibration(neutral_servo_deg=90.0, scale=1.0, min_rad=-math.pi / 2, max_rad=math.pi / 2),
-    "elbow_flexion":      JointCalibration(neutral_servo_deg=90.0, scale=1.0, min_rad=-0.6109,       max_rad=2.356),
-    "wrist_flexion":      JointCalibration(neutral_servo_deg=90.0, scale=1.0, min_rad=-math.pi / 2, max_rad=math.pi / 2),
-    "wrist_pronation":    JointCalibration(neutral_servo_deg=90.0, scale=1.0, min_rad=-math.pi / 2, max_rad=math.pi / 2),
+    "elbow_flexion":      JointCalibration(neutral_servo_deg=math.pi/3, scale=1.0, min_rad=0,       max_rad=23/36*(math.pi)),
+    "wrist_flexion":      JointCalibration(neutral_servo_deg=2/9*(math.pi), scale=1.0, min_rad=0, max_rad=11/18*(math.pi)),
+    "wrist_pronation":    JointCalibration(neutral_servo_deg=2/3*(math.pi), scale=1.0, min_rad=0, max_rad=math.pi),
 }
 
 RIGHT_JOINT_CALIBRATION: dict[str, JointCalibration] = {
     "shoulder_swing":     JointCalibration(neutral_servo_deg=90.0, scale=1.0, min_rad=-math.pi / 2, max_rad=math.pi / 2),
     "shoulder_abduction": JointCalibration(neutral_servo_deg=90.0, scale=1.0, min_rad=-math.pi / 2, max_rad=math.pi / 2),
-    "elbow_flexion":      JointCalibration(neutral_servo_deg=90.0, scale=1.0, min_rad=-0.6109,       max_rad=2.356),
-    "wrist_flexion":      JointCalibration(neutral_servo_deg=90.0, scale=1.0, min_rad=-math.pi / 2, max_rad=math.pi / 2),
-    "wrist_pronation":    JointCalibration(neutral_servo_deg=90.0, scale=1.0, min_rad=-math.pi / 2, max_rad=math.pi / 2),
+    "elbow_flexion":      JointCalibration(neutral_servo_deg=2/3*(math.pi), scale=1.0, min_rad=math.pi, max_rad=13/36*(math.pi)),
+    "wrist_flexion":      JointCalibration(neutral_servo_deg=11/36*(math.pi), scale=1.0, min_rad=11/18*(math.pi), max_rad=0),
+    "wrist_pronation":    JointCalibration(neutral_servo_deg=1/3*(math.pi), scale=1.0, min_rad=0, max_rad=math.pi),
 }
 
 
