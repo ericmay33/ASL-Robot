@@ -26,6 +26,13 @@ def phrase_find(tokens: list[str]) -> list[str]:
         ("CATCH", "BALL"): "CATCH_BALL",
         ("THROW", "BALL"): "THROW_BALL",
         ("POTATO", "CHIP"): "POTATO_CHIP",
+        ("DON'T", "WANT"): "DONT_WANT",
+        ("DO", "NOT", "WANT"): "DONT_WANT",
+        ("LET", "US") : "ALLOW_US",
+        ("LET'S") : "ALLOW_US",
+        ("LET", "POSS") : "ALLOW_US",
+        ("WHAT", "YOU", "DO") : "WHAT-YOU-DO",
+        ("ARE", "YOU") : "QUESTION"
     }
     
     while i < len(tokens):
@@ -76,14 +83,14 @@ def translate_to_asl_gloss(text: str) -> list[str]:
         
         # Cleaning tokens
         questionWords = {"WHO", "WHAT", "WHEN", "WHERE", "WHY", "HOW"}
-        removeWords = {"BE", "POSS", "TO", "HAVE", "AT"}
+        removeWords = {"BE", "POSS", "TO", "AT", "DO"}
         removeExtensions = {"DESC-", "X-"}
         number_map = {
             "0": "ZERO", "1": "ONE", "2": "TWO", "3": "THREE", "4": "FOUR",
             "5": "FIVE", "6": "SIX", "7": "SEVEN", "8": "EIGHT", "9": "NINE",
             "10": "TEN"
         }
-        word_map = {"MY": "ME", "YOUR": "YOU", "X-I" : "ME", "WHAT'S" : "WHAT", "HI" : "HELLO", "AUGUST" : "AUG", "SEPTEMBER" : "SEPT", "OCTOBER" : "OCT", "NOVEMBER" : "NOV", "DECEMBER" : "DEC"}
+        word_map = {"MY": "ME", "YOUR": "YOU", "X-I" : "ME", "WHAT'S" : "WHAT", "HI" : "HELLO", "AUGUST" : "AUG", "SEPTEMBER" : "SEPT", "OCTOBER" : "OCT", "NOVEMBER" : "NOV", "DECEMBER" : "DEC", "APARTMENT" : "APT", "JUST" : "RECENT"}
         
         # 1. Remove unecessary words
         cleaned = [t for t in tokens if t not in removeWords]
