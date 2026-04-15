@@ -20,8 +20,8 @@
 // Stepper calibration (both arms share same hardware, so same constants)
 // Rotation axis — tune for actual gear ratio
 #define ROTATION_STEPS_PER_DEG  320.0f
-// Elevation axis — 125:1 gearbox
-#define ELEVATION_STEPS_PER_DEG 1111.11f  // 3200 * 125 / 360
+// Elevation axis — 25:1 gearbox
+#define ELEVATION_STEPS_PER_DEG 222.22f  // 3200 * 25 / 360
 
 #define SHOULDER_MAX_SPEED 10000.0f
 #define SHOULDER_ACCEL     5000.0f
@@ -48,7 +48,7 @@ const int shoulder1_stepPin   = 33;
 const int shoulder1_dirPin    = 32;
 const int shoulder1_enablePin = 25;
 
-// Motor 2: Shoulder Flexion/Elevation (raise/lower) — 125:1 gearbox
+// Motor 2: Shoulder Flexion/Elevation (raise/lower) — 25:1 gearbox
 const int shoulder2_stepPin   = 27;
 const int shoulder2_dirPin    = 26;
 const int shoulder2_enablePin = 14;
