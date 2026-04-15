@@ -141,13 +141,13 @@ def test_shoulder_rotation(ser: "serial.Serial", side: str, label: str) -> list[
     key = f"{side}S"
     results = []
     results.append(send_and_wait(
-        ser, f"{label} Shoulder Rotation → 45°  (elevation stays 0°)",
-        {"token": "TEST_ROT", "duration": 2.0, "keyframes": [{key: [45, 0]}]}
+        ser, f"{label} Shoulder Rotation → 135°  (elevation stays neutral)",
+        {"token": "TEST_ROT", "duration": 2.0, "keyframes": [{key: [135, 90]}]}
     )[0])
     time.sleep(STEP_PAUSE)
     results.append(send_and_wait(
-        ser, f"{label} Shoulder Rotation → 0°   (return)",
-        {"token": "TEST_ROT", "duration": 2.0, "keyframes": [{key: [0, 0]}]}
+        ser, f"{label} Shoulder Rotation → 90°   (return to neutral)",
+        {"token": "TEST_ROT", "duration": 2.0, "keyframes": [{key: [90, 90]}]}
     )[0])
     print_summary(f"{label} Shoulder Rotation", results)
     return results
@@ -157,13 +157,13 @@ def test_shoulder_elevation(ser: "serial.Serial", side: str, label: str) -> list
     key = f"{side}S"
     results = []
     results.append(send_and_wait(
-        ser, f"{label} Shoulder Elevation → 45°  (rotation stays 0°)",
-        {"token": "TEST_ELEV", "duration": 2.0, "keyframes": [{key: [0, 45]}]}
+        ser, f"{label} Shoulder Elevation → 135°  (rotation stays neutral)",
+        {"token": "TEST_ELEV", "duration": 2.0, "keyframes": [{key: [90, 135]}]}
     )[0])
     time.sleep(STEP_PAUSE)
     results.append(send_and_wait(
-        ser, f"{label} Shoulder Elevation → 0°   (return)",
-        {"token": "TEST_ELEV", "duration": 2.0, "keyframes": [{key: [0, 0]}]}
+        ser, f"{label} Shoulder Elevation → 90°   (return to neutral)",
+        {"token": "TEST_ELEV", "duration": 2.0, "keyframes": [{key: [90, 90]}]}
     )[0])
     print_summary(f"{label} Shoulder Elevation", results)
     return results
@@ -172,9 +172,9 @@ def test_shoulder_elevation(ser: "serial.Serial", side: str, label: str) -> list
 def test_shoulder_combined(ser: "serial.Serial", side: str, label: str) -> list[bool]:
     key = f"{side}S"
     steps = [
-        (f"{label} Shoulder Combined → [45°, 45°]",       [45, 45]),
-        (f"{label} Shoulder Combined → [90°, 90°]",       [90, 90]),
-        (f"{label} Shoulder Combined → [0°, 0°] (return)", [0, 0]),
+        (f"{label} Shoulder Combined → [135°, 135°]",              [135, 135]),
+        (f"{label} Shoulder Combined → [45°, 135°]",               [45, 135]),
+        (f"{label} Shoulder Combined → [90°, 90°] (return to neutral)", [90, 90]),
     ]
     results = []
     for desc, angles in steps:

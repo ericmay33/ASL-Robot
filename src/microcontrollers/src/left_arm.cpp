@@ -166,8 +166,8 @@ void processCommand(String jsonCmd) {
     // Extract left-shoulder array (LS): [rotation_deg, elevation_deg]
     JsonArray LS = frame["LS"];
     if (!LS.isNull() && LS.size() == 2) {
-      targetRotationSteps  = (long)(LS[0].as<float>() * ROTATION_STEPS_PER_DEG);
-      targetElevationSteps = (long)(LS[1].as<float>() * ELEVATION_STEPS_PER_DEG);
+      targetRotationSteps  = (long)((LS[0].as<float>() - 90.0f) * ROTATION_STEPS_PER_DEG);
+      targetElevationSteps = (long)((LS[1].as<float>() - 90.0f) * ELEVATION_STEPS_PER_DEG);
       hasShoulder = true;
     }
 
