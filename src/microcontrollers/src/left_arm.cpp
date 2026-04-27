@@ -2,6 +2,7 @@
 #include <ESP32Servo.h>
 #include <ArduinoJson.h>
 #include <AccelStepper.h>
+#include <Preferences.h>
 
 // ================================
 // CONFIGURATION
@@ -17,6 +18,10 @@
 #define BAUD_RATE          115200
 #define DEFAULT_STEP_DELAY 2   // ms per servo movement step
 
+// Elbow slowdown factor — elbow advances 1 step every N outer iterations.
+// Higher = slower/smoother elbow; hand & wrist are unaffected.
+#define ELBOW_SLOWDOWN     3
+
 // Stepper calibration (both arms share same hardware, so same constants)
 // Rotation axis — tune for actual gear ratio
 #define ROTATION_STEPS_PER_DEG  320.0f
@@ -25,6 +30,31 @@
 
 #define SHOULDER_MAX_SPEED 6000.0f
 #define SHOULDER_ACCEL     5000.0f
+
+// Shoulder joint limits (degrees)
+#define ROTATION_MIN_DEG    0.0f
+#define ROTATION_MAX_DEG    180.0f
+#define ELEVATION_MIN_DEG   0.0f
+#define ELEVATION_MAX_DEG   180.0f
+
+// Converted to step limits
+#define ROTATION_MIN_STEPS  ((long)(ROTATION_MIN_DEG  * ROTATION_STEPS_PER_DEG))
+#define ROTATION_MAX_STEPS  ((long)(ROTATION_MAX_DEG  * ROTATION_STEPS_PER_DEG))
+#define ELEVATION_MIN_STEPS ((long)(ELEVATION_MIN_DEG * ELEVATION_STEPS_PER_DEG))
+#define ELEVATION_MAX_STEPS ((long)(ELEVATION_MAX_DEG * ELEVATION_STEPS_PER_DEG))
+
+// Homing configuration
+#define HOMING_ENABLED       false   // Set true when limit switches are installed
+#define HOMING_SPEED         2000.0f
+#define HOMING_BACKOFF_STEPS 200
+
+// Per-axis homing direction (+1 or -1). Flip the sign for an axis whose motor
+// moves AWAY from its limit switch when stepping negative.
+#define ROTATION_HOME_DIR    -1
+#define ELEVATION_HOME_DIR   -1
+
+// Return-to-start-pose after each sign
+#define RETURN_TO_START_POSE true
 
 // ================================
 // SERVO DECLARATIONS
@@ -53,12 +83,32 @@ const int shoulder2_stepPin   = 27;
 const int shoulder2_dirPin    = 26;
 const int shoulder2_enablePin = 14;
 
+// Limit switch pins (active LOW with INPUT_PULLUP)
+const int rotationLimitPin  = 34;
+const int elevationLimitPin = 35;
+
 // ================================
 // SHOULDER STEPPER OBJECTS
 // AccelStepper::DRIVER = STEP + DIR interface (MS1/MS2 hardwired on driver board)
 // ================================
 AccelStepper shoulderRotation(AccelStepper::DRIVER, shoulder1_stepPin, shoulder1_dirPin);
 AccelStepper shoulderFlexion(AccelStepper::DRIVER,  shoulder2_stepPin, shoulder2_dirPin);
+
+// ================================
+// PER-JOINT STATE
+// ================================
+struct JointState {
+  long current_steps;
+  long min_steps;
+  long max_steps;
+  long home_offset_steps;
+};
+
+JointState rotationState  = {0, ROTATION_MIN_STEPS,  ROTATION_MAX_STEPS,  0};
+JointState elevationState = {0, ELEVATION_MIN_STEPS, ELEVATION_MAX_STEPS, 0};
+
+// NVS persistence
+Preferences prefs;
 
 // ================================
 // COMMAND QUEUE
@@ -91,6 +141,59 @@ bool dequeueCommand(String &cmd) {
 }
 
 // ================================
+// HELPERS: CLAMPING, NVS, HOMING
+// ================================
+long clampSteps(long target, const JointState &state) {
+  if (target < state.min_steps) return state.min_steps;
+  if (target > state.max_steps) return state.max_steps;
+  return target;
+}
+
+void savePositionNVS() {
+  prefs.begin("shoulder", false);
+  prefs.putLong("rot_steps", rotationState.current_steps);
+  prefs.putLong("elev_steps", elevationState.current_steps);
+  prefs.end();
+}
+
+void loadPositionNVS() {
+  prefs.begin("shoulder", true);
+  rotationState.current_steps  = prefs.getLong("rot_steps", 0);
+  elevationState.current_steps = prefs.getLong("elev_steps", 0);
+  prefs.end();
+}
+
+void homeAxis(AccelStepper &stepper, int limitPin, JointState &state, int homeDir) {
+  if (!HOMING_ENABLED) return;
+
+  pinMode(limitPin, INPUT_PULLUP);
+  Serial.print("[LEFT_ARM] Homing axis...");
+
+  stepper.setMaxSpeed(HOMING_SPEED);
+  stepper.moveTo((long)homeDir * 999999);
+
+  while (digitalRead(limitPin) == HIGH) {
+    stepper.run();
+    yield();
+  }
+
+  stepper.stop();
+  stepper.setCurrentPosition(state.home_offset_steps);
+  state.current_steps = state.home_offset_steps;
+
+  // Back off from switch (opposite of homing direction)
+  stepper.moveTo(state.home_offset_steps - (long)homeDir * HOMING_BACKOFF_STEPS);
+  while (stepper.distanceToGo() != 0) {
+    stepper.run();
+    yield();
+  }
+  state.current_steps = stepper.currentPosition();
+
+  stepper.setMaxSpeed(SHOULDER_MAX_SPEED);
+  Serial.println(" done.");
+}
+
+// ================================
 // PROCESS ONE MOTION COMMAND
 // ================================
 void processCommand(String jsonCmd) {
@@ -118,9 +221,9 @@ void processCommand(String jsonCmd) {
     return;
   }
 
-  // Previous stepper positions in steps — persisted across keyframes
-  static long prevRotationSteps  = 0;
-  static long prevElevationSteps = 0;
+  // Capture start pose for return-to-start after sign
+  long startRotationSteps  = rotationState.current_steps;
+  long startElevationSteps = elevationState.current_steps;
 
   // Process each keyframe
   for (JsonObject frame : keyframes) {
@@ -132,9 +235,9 @@ void processCommand(String jsonCmd) {
 
     bool hasHand = false, hasWrist = false, hasElbow = false, hasShoulder = false;
 
-    // Stepper targets default to previous position (no movement if LS absent)
-    long targetRotationSteps  = prevRotationSteps;
-    long targetElevationSteps = prevElevationSteps;
+    // Stepper targets default to current position (no movement if LS absent)
+    long targetRotationSteps  = rotationState.current_steps;
+    long targetElevationSteps = elevationState.current_steps;
 
     // Extract left-hand array (L)
     JsonArray L = frame["L"];
@@ -171,6 +274,10 @@ void processCommand(String jsonCmd) {
       hasShoulder = true;
     }
 
+    // Clamp stepper targets to joint limits
+    targetRotationSteps  = clampSteps(targetRotationSteps,  rotationState);
+    targetElevationSteps = clampSteps(targetElevationSteps, elevationState);
+
     // Queue stepper targets (non-blocking — .run() advances below)
     if (hasShoulder) {
       shoulderRotation.moveTo(targetRotationSteps);
@@ -194,7 +301,7 @@ void processCommand(String jsonCmd) {
     int maxSteps = 0;
     if (hasHand)  { for (int i = 0; i < HAND_SERVO_COUNT;  i++) { int s = abs(targetHandAngles[i]  - currentHand[i]);  if (s > maxSteps) maxSteps = s; } }
     if (hasWrist) { for (int i = 0; i < WRIST_SERVO_COUNT; i++) { int s = abs(targetWristAngles[i] - currentWrist[i]); if (s > maxSteps) maxSteps = s; } }
-    if (hasElbow) { for (int i = 0; i < ELBOW_SERVO_COUNT; i++) { int s = abs(targetElbowAngles[i] - currentElbow[i]); if (s > maxSteps) maxSteps = s; } }
+    if (hasElbow) { for (int i = 0; i < ELBOW_SERVO_COUNT; i++) { int s = abs(targetElbowAngles[i] - currentElbow[i]) * ELBOW_SLOWDOWN; if (s > maxSteps) maxSteps = s; } }
 
     // Move all servos concurrently, advance steppers each iteration
     for (int step = 0; step < maxSteps; step++) {
@@ -212,7 +319,7 @@ void processCommand(String jsonCmd) {
           wristServos[i].write(currentWrist[i]);
         }
       }
-      if (hasElbow) {
+      if (hasElbow && (step % ELBOW_SLOWDOWN == 0)) {
         for (int i = 0; i < ELBOW_SERVO_COUNT; i++) {
           if (currentElbow[i] != targetElbowAngles[i])
             currentElbow[i] += (currentElbow[i] < targetElbowAngles[i]) ? 1 : -1;
@@ -238,16 +345,31 @@ void processCommand(String jsonCmd) {
       shoulderFlexion.run();
     }
 
-    // Update previous stepper positions
+    // Update joint state
     if (hasShoulder) {
-      prevRotationSteps  = targetRotationSteps;
-      prevElevationSteps = targetElevationSteps;
+      rotationState.current_steps  = targetRotationSteps;
+      elevationState.current_steps = targetElevationSteps;
     }
 
     // Calculate frame time based on duration
     float frameTime = duration / frameCount;
     delay((int)(frameTime * 1000));
   }
+
+  // Return to start pose after sign execution
+  if (RETURN_TO_START_POSE) {
+    shoulderRotation.moveTo(startRotationSteps);
+    shoulderFlexion.moveTo(startElevationSteps);
+    while (shoulderRotation.distanceToGo() != 0 || shoulderFlexion.distanceToGo() != 0) {
+      shoulderRotation.run();
+      shoulderFlexion.run();
+    }
+    rotationState.current_steps  = startRotationSteps;
+    elevationState.current_steps = startElevationSteps;
+  }
+
+  // Persist position to NVS
+  savePositionNVS();
 
   // Signal completion back to Python
   Serial.println("ACK");
@@ -297,6 +419,19 @@ void setup() {
   shoulderRotation.setAcceleration(SHOULDER_ACCEL);
   shoulderFlexion.setMaxSpeed(SHOULDER_MAX_SPEED);
   shoulderFlexion.setAcceleration(SHOULDER_ACCEL);
+
+  // Load last-known position from NVS (fallback before homing)
+  loadPositionNVS();
+  shoulderRotation.setCurrentPosition(rotationState.current_steps);
+  shoulderFlexion.setCurrentPosition(elevationState.current_steps);
+  Serial.print("[LEFT_ARM] NVS loaded — rot:");
+  Serial.print(rotationState.current_steps);
+  Serial.print(" elev:");
+  Serial.println(elevationState.current_steps);
+
+  // Home both axes (no-op if HOMING_ENABLED is false)
+  homeAxis(shoulderRotation, rotationLimitPin,  rotationState,  ROTATION_HOME_DIR);
+  homeAxis(shoulderFlexion,  elevationLimitPin, elevationState, ELEVATION_HOME_DIR);
 
   Serial.println("[LEFT_ARM] Ready for motion commands.");
 }
