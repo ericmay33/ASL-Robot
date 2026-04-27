@@ -53,9 +53,6 @@
 #define ROTATION_HOME_DIR    -1
 #define ELEVATION_HOME_DIR   -1
 
-// Return-to-start-pose after each sign
-#define RETURN_TO_START_POSE true
-
 // ================================
 // SERVO DECLARATIONS
 // ================================
@@ -221,10 +218,6 @@ void processCommand(String jsonCmd) {
     return;
   }
 
-  // Capture start pose for return-to-start after sign
-  long startRotationSteps  = rotationState.current_steps;
-  long startElevationSteps = elevationState.current_steps;
-
   // Process each keyframe
   for (JsonObject frame : keyframes) {
 
@@ -354,18 +347,6 @@ void processCommand(String jsonCmd) {
     // Calculate frame time based on duration
     float frameTime = duration / frameCount;
     delay((int)(frameTime * 1000));
-  }
-
-  // Return to start pose after sign execution
-  if (RETURN_TO_START_POSE) {
-    shoulderRotation.moveTo(startRotationSteps);
-    shoulderFlexion.moveTo(startElevationSteps);
-    while (shoulderRotation.distanceToGo() != 0 || shoulderFlexion.distanceToGo() != 0) {
-      shoulderRotation.run();
-      shoulderFlexion.run();
-    }
-    rotationState.current_steps  = startRotationSteps;
-    elevationState.current_steps = startElevationSteps;
   }
 
   // Persist position to NVS

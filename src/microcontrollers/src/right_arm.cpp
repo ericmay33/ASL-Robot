@@ -28,7 +28,7 @@
 // Elevation axis — 25:1 gearbox
 #define ELEVATION_STEPS_PER_DEG 222.22f  // 3200 * 25 / 360
 
-#define SHOULDER_MAX_SPEED 10000.0f
+#define SHOULDER_MAX_SPEED 6000.0f
 #define SHOULDER_ACCEL     5000.0f
 
 // Shoulder joint limits (degrees)
@@ -52,9 +52,6 @@
 // moves AWAY from its limit switch when stepping negative.
 #define ROTATION_HOME_DIR    -1
 #define ELEVATION_HOME_DIR   -1
-
-// Return-to-start-pose after each sign
-#define RETURN_TO_START_POSE true
 
 // ================================
 // SERVO DECLARATIONS
@@ -221,10 +218,6 @@ void processCommand(String jsonCmd) {
     return;
   }
 
-  // Capture start pose for return-to-start after sign
-  long startRotationSteps  = rotationState.current_steps;
-  long startElevationSteps = elevationState.current_steps;
-
   // Process each keyframe
   for (JsonObject frame : keyframes) {
 
@@ -258,10 +251,12 @@ void processCommand(String jsonCmd) {
     }
 
     // Extract right-elbow array (RE)
+    // Right arm is physically mirrored; invert at the read site so the schema
+    // stays in left-arm convention everywhere upstream.
     JsonArray RE = frame["RE"];
     if (!RE.isNull() && RE.size() == ELBOW_SERVO_COUNT) {
       for (int i = 0; i < ELBOW_SERVO_COUNT; i++) {
-        targetElbowAngles[i] = RE[i].as<int>();
+        targetElbowAngles[i] = 180 - RE[i].as<int>();
       }
       hasElbow = true;
     }
@@ -291,6 +286,7 @@ void processCommand(String jsonCmd) {
 
     static int prevHand[HAND_SERVO_COUNT]   = {90, 90, 90, 90, 90};
     static int prevWrist[WRIST_SERVO_COUNT] = {90, 90};
+    // Stored in actual-servo-angle space (post-inversion). 90° is the inversion fixed point.
     static int prevElbow[ELBOW_SERVO_COUNT] = {90};
 
     if (hasHand)  { for (int i = 0; i < HAND_SERVO_COUNT;  i++) currentHand[i]  = prevHand[i]; }
@@ -354,18 +350,6 @@ void processCommand(String jsonCmd) {
     // Calculate frame time based on duration
     float frameTime = duration / frameCount;
     delay((int)(frameTime * 1000));
-  }
-
-  // Return to start pose after sign execution
-  if (RETURN_TO_START_POSE) {
-    shoulderRotation.moveTo(startRotationSteps);
-    shoulderFlexion.moveTo(startElevationSteps);
-    while (shoulderRotation.distanceToGo() != 0 || shoulderFlexion.distanceToGo() != 0) {
-      shoulderRotation.run();
-      shoulderFlexion.run();
-    }
-    rotationState.current_steps  = startRotationSteps;
-    elevationState.current_steps = startElevationSteps;
   }
 
   // Persist position to NVS
