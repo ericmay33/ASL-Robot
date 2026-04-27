@@ -65,12 +65,12 @@ ASL-Robot/
 ## Hardware
 
 - **2x ESP32** dev boards (left arm + right arm)
-- **20 servos** per robot (10 per arm):
+- **16 servos + 4 stepper motors** per robot (8 servos + 2 steppers per arm):
   - Hands (`L`/`R`): 5 servos each — finger articulation
   - Wrists (`LW`/`RW`): 2 servos each — flexion and pronation
   - Elbows (`LE`/`RE`): 1 servo each — flexion/extension
-  - Shoulders (`LS`/`RS`): 2 servos each — swing and abduction
-- Serial communication at 115200 baud (default: `COM3` left, `COM6` right)
+  - Shoulders (`LS`/`RS`): 2 **stepper motors** each (A4988 drivers) — rotation and flexion/elevation. The JSON schema still represents these as 0–180° "servo angle" arrays; firmware converts to steps via `ROTATION_STEPS_PER_DEG` / `ELEVATION_STEPS_PER_DEG` and homes each axis against a limit switch at boot.
+- Serial communication at 115200 baud (default: `COM3` left, `COM4` right)
 - JSON command protocol, 3-command queue, smooth interpolated motion
 
 ## Setup
@@ -129,24 +129,27 @@ python -B -m src.main
 
 ## Sign demo (modular testing)
 
-Run one sign at a time from the terminal without speech, translation workers, or the emotion UI. Only MongoDB resolution (plus optional English→gloss T5 in English mode) and the motion serial thread start.
+Run signs directly from the terminal without speech, AI translation, or the emotion UI. Only MongoDB resolution and the motion serial thread start — no STT, no T5/Whisper, no Gemini.
 
 ```bash
 python -B -m src.testing.sign_demo
 ```
 
-- By default each line is **English**; only the **first** ASL gloss token from translation is executed (use `--all-tokens` for the whole phrase).
-- **`--gloss`** treats the line as DB token(s) (e.g. `HELLO`); fast and skips the T5 model.
-- **`--dry-run`** prints motion JSON only (no serial).
-- Serial ports: **`--left-port`** / **`--right-port`**, or env **`ASL_LEFT_PORT`** / **`ASL_RIGHT_PORT`** (defaults match `motion_io`: `COM3`, `COM6`).
+- Each input line is split on whitespace and every token is queued in order. `HELLO` runs one sign; `HELLO FRIEND` chains two; unknown tokens fall back to character-by-character fingerspelling.
+- Token lookup is **case-insensitive** — `hello`, `Hello`, and `HELLO` all resolve to the same MongoDB document.
+- **Bilateral signs** (keyframes containing both `L*` and `R*` keys) are routed to both ESP32s automatically.
+- **`--dry-run`** prints motion JSON only (no serial connection, no motion thread).
+- Serial ports: **`--left-port`** / **`--right-port`**, or env **`ASL_LEFT_PORT`** / **`ASL_RIGHT_PORT`** (defaults match `motion_io`: `COM3`, `COM4`).
 
 Examples:
 
 ```bash
-python -B -m src.testing.sign_demo --gloss
-python -B -m src.testing.sign_demo --gloss --all-tokens
-python -B -m src.testing.sign_demo --dry-run --gloss
+python -B -m src.testing.sign_demo
+python -B -m src.testing.sign_demo --dry-run
+python -B -m src.testing.sign_demo --left-port COM3 --right-port COM5
 ```
+
+Interactive commands: `help`, `quit` / `exit` / `q`.
 
 ## Forward Kinematics Tool
 
@@ -219,7 +222,8 @@ python -m src.fk_tool compare --ai-input ai_signs.json --ref-source mongodb --re
 
 | Issue | Fix |
 |-------|-----|
-| Serial connection fails | Check COM port in `motion_io.py`, verify ESP32 is connected, confirm 115200 baud |
+| Serial connection fails | Check COM port in `motion_io.py` (defaults `COM3` / `COM4`), verify both ESP32s are connected, confirm 115200 baud |
+| Shoulders don't move / hit limits at boot | Steppers home against limit switches on startup — power on with arms in a homing-safe pose. Confirm A4988 enable/dir/step pins match `*_arm.cpp` |
 | Database connection fails | Verify `MONGODB_URI` and `MONGODB_DB_NAME` in `.env` |
 | Speech recognition fails | Check `stt_key_file.json` exists, verify mic permissions, ensure Cloud STT API is enabled |
 | AI translation fails | Verify `GEMINI_API_KEY` in `.env` |

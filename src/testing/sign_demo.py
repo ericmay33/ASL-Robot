@@ -1,23 +1,21 @@
 """
-Modular sign-by-sign CLI: bypasses STT, AI worker thread, emotion UI, and DB worker thread.
+Modular sign-by-sign CLI: bypasses STT, AI translation, emotion UI, and DB worker thread.
 
-Only MongoDB lookup / fingerspelling resolution and the motion serial thread run.
+Each input line is split on whitespace; each piece is queued as a MongoDB token
+(case-insensitive — `hello` and `HELLO` resolve the same document). Unknown tokens
+fall back to character-by-character fingerspelling. Bilateral signs (keyframes with
+both L*/R* keys) are routed to both ESP32s automatically by motion_io.
 
 Usage:
     python -B -m src.testing.sign_demo [options]
 
 Options:
-    --gloss          Treat each input line as ASL gloss token(s), not English.
-    --all-tokens     Queue every token from the line (default: first token only).
     --dry-run        Print motion JSON to stdout; do not connect serial or start motion thread.
     --left-port      Serial port for left arm (default: ASL_LEFT_PORT env or COM3).
-    --right-port     Serial port for right arm (default: ASL_RIGHT_PORT env or COM6).
+    --right-port     Serial port for right arm (default: ASL_RIGHT_PORT env or COM4).
 
 This module sets ASL_SIGN_DEMO=1 before other src imports so only MONGODB_URI and
 MONGODB_DB_NAME are required in .env (see settings.validate).
-
-English mode loads the Hugging Face T5 translate model on the first line you enter (slow).
-Use --gloss for fast iteration when you know the DB token (see: python -m src.signs.listsigns).
 """
 from __future__ import annotations
 
@@ -25,7 +23,6 @@ import argparse
 import json
 import os
 import threading
-import time
 from typing import Any
 
 # Must be set before any import that loads src.config.settings
@@ -48,48 +45,26 @@ def _json_default(obj: Any) -> str:
     raise TypeError(f"Type {type(obj)} not serializable")
 
 
-def _tokens_from_english(line: str) -> list[str]:
-    from src.text_to_ASL.translate_AI import translate_to_asl_gloss
-
-    return translate_to_asl_gloss(line)
-
-
-def _print_help(gloss: bool, all_tokens: bool) -> None:
+def _print_help() -> None:
     print(
-        "[SIGN_DEMO] Enter a line and press Enter to queue sign(s).\n"
-        "  quit | exit | q  — exit\n"
-        "  help             — this message\n"
-        f"  Mode: {'gloss tokens' if gloss else 'English'}; "
-        f"{'all tokens per line' if all_tokens else 'first token only'}.\n"
+        "[SIGN_DEMO] Enter one or more space-separated tokens and press Enter.\n"
+        "  e.g.  HELLO            -> one sign\n"
+        "        hello friend     -> two signs (case-insensitive)\n"
+        "        XYZ              -> unknown token: fingerspells X, Y, Z\n"
+        "  quit | exit | q   - exit\n"
+        "  help              - this message\n"
     )
 
 
-def _process_line(
-    line: str,
-    file_io: FileIOManager,
-    *,
-    gloss: bool,
-    all_tokens: bool,
-    dry_run: bool,
-) -> None:
-    line = line.strip()
-    if not line:
+def _process_line(line: str, file_io: FileIOManager, *, dry_run: bool) -> None:
+    tokens = line.split()
+    if not tokens:
         return
-
-    if gloss:
-        parts = line.split()
-        tokens = parts if all_tokens else parts[:1]
-    else:
-        tokens = _tokens_from_english(line)
-        if not tokens:
-            print("[SIGN_DEMO] Translation produced no tokens.")
-            return
-        tokens = tokens if all_tokens else tokens[:1]
-
     for token in tokens:
         if dry_run:
-            print(f"[SIGN_DEMO] token={token!r} -> {len(motions_for_token(token))} motion script(s)")
-            for m in motions_for_token(token):
+            scripts = motions_for_token(token)
+            print(f"[SIGN_DEMO] token={token!r} -> {len(scripts)} motion script(s)")
+            for m in scripts:
                 print(json.dumps(m, default=_json_default))
         else:
             enqueue_motions_for_token(file_io, token, log=True, log_tag="[SIGN_DEMO]")
@@ -97,17 +72,7 @@ def _process_line(
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
-        description="CLI sign demo: Mongo + motion thread only (no full robot pipeline).",
-    )
-    parser.add_argument(
-        "--gloss",
-        action="store_true",
-        help="Input lines are ASL gloss token(s) (not English).",
-    )
-    parser.add_argument(
-        "--all-tokens",
-        action="store_true",
-        help="Queue every token from the line instead of only the first.",
+        description="CLI sign demo: Mongo + motion thread only (no STT, no AI translation).",
     )
     parser.add_argument(
         "--dry-run",
@@ -122,7 +87,7 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument(
         "--right-port",
         default=os.getenv("ASL_RIGHT_PORT", "COM4").strip(),
-        help="Right arm serial port (default: ASL_RIGHT_PORT or COM6).",
+        help="Right arm serial port (default: ASL_RIGHT_PORT or COM4).",
     )
     args = parser.parse_args(argv)
 
@@ -149,13 +114,7 @@ def main(argv: list[str] | None = None) -> None:
     else:
         print("[SIGN_DEMO] Dry-run: printing motion JSON only.")
 
-    if not args.gloss:
-        print(
-            "[SIGN_DEMO] English mode: the T5 model loads when you submit the first line "
-            "(may take a while)."
-        )
-
-    _print_help(args.gloss, args.all_tokens)
+    _print_help()
 
     try:
         while True:
@@ -167,15 +126,9 @@ def main(argv: list[str] | None = None) -> None:
             if cmd in ("quit", "exit", "q"):
                 break
             if cmd == "help":
-                _print_help(args.gloss, args.all_tokens)
+                _print_help()
                 continue
-            _process_line(
-                line,
-                file_io,
-                gloss=args.gloss,
-                all_tokens=args.all_tokens,
-                dry_run=args.dry_run,
-            )
+            _process_line(line, file_io, dry_run=args.dry_run)
     except KeyboardInterrupt:
         print("\n[SIGN_DEMO] Interrupted.")
 
