@@ -121,7 +121,7 @@ def main(argv: list[str] | None = None) -> None:
     )
     parser.add_argument(
         "--right-port",
-        default=os.getenv("ASL_RIGHT_PORT", "COM6").strip(),
+        default=os.getenv("ASL_RIGHT_PORT", "COM4").strip(),
         help="Right arm serial port (default: ASL_RIGHT_PORT or COM6).",
     )
     args = parser.parse_args(argv)
