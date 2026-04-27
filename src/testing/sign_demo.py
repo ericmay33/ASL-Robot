@@ -81,7 +81,7 @@ def main(argv: list[str] | None = None) -> None:
     )
     parser.add_argument(
         "--left-port",
-        default=os.getenv("ASL_LEFT_PORT", "COM3").strip(),
+        default=os.getenv("ASL_LEFT_PORT", "COM8").strip(),
         help="Left arm serial port (default: ASL_LEFT_PORT or COM3).",
     )
     parser.add_argument(
