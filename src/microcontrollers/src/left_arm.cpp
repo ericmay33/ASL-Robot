@@ -21,7 +21,7 @@
 // Rotation axis — tune for actual gear ratio
 #define ROTATION_STEPS_PER_DEG  320.0f
 // Elevation axis — 125:1 gearbox
-#define ELEVATION_STEPS_PER_DEG 1111.11f  // 3200 * 125 / 360
+#define ELEVATION_STEPS_PER_DEG 222.22f  // 3200 * 125 / 360
 
 #define SHOULDER_MAX_SPEED 6000.0f
 #define SHOULDER_ACCEL     5000.0f

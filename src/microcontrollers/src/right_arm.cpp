@@ -23,7 +23,7 @@
 // Elevation axis — 25:1 gearbox
 #define ELEVATION_STEPS_PER_DEG 222.22f  // 3200 * 25 / 360
 
-#define SHOULDER_MAX_SPEED 10000.0f
+#define SHOULDER_MAX_SPEED 6000.0f
 #define SHOULDER_ACCEL     5000.0f
 
 // ================================
