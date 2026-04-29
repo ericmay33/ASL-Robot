@@ -10,7 +10,7 @@ from dataclasses import dataclass
 
 
 # ---------------------------------------------------------------------------
-# Link lengths (inches) — matching Professor LaMack's MATLAB PlotRobotLinks
+# Link lengths (inches)
 # ---------------------------------------------------------------------------
 
 SHOULDER_OFFSET_LENGTH: float = 2.75      # T12 translation along X (shoulder joint spacing)
@@ -47,7 +47,7 @@ class JointCalibration:
 
 
 # Default calibration: servo 90 deg = 0 rad, linear 1:1, symmetric limits.
-# ACTION ITEM: Confirm with Professor LaMack / engineering team.
+# ACTION ITEM: Confirm with the engineering team.
 #
 # NOTE: Left and right arms can have different calibration values.
 LEFT_JOINT_CALIBRATION: dict[str, JointCalibration] = {

@@ -6,17 +6,6 @@ Fred is a real-time English-to-American-Sign-Language interpreter built around t
 
 The project's goal is to demonstrate that an end-to-end "speech in, signed motion out" pipeline can be built from off-the-shelf components and open ML models, and to produce a tangible communication aid that translates English-language audio into expressive ASL output.
 
-## Team
-
-| Member | Focus |
-|--------|-------|
-| Eric May (`ericmay33`) | System architecture, motion pipeline, threading model, sign-resolution |
-| Aidan Alexander (`SunPikl`) | Sign authoring, motion calibration, FK evaluation tool, hardware integration |
-| Evan Vastakis (`evanvastakis`) | Speech-to-text, AI translation, emotion classifier, GUI |
-| Shawn (`shawnachie`) | Mechanical design, firmware, electrical wiring, calibration |
-
-Faculty advisor: **Prof. James LaMack** (mechanical engineering / forward-kinematics consulting; Fred's 5-DOF kinematic chain is ported from his MATLAB `PlotRobotLinks` reference).
-
 ## Demo at a glance
 
 ```
@@ -188,7 +177,7 @@ This module sets `ASL_SIGN_DEMO=1` before importing settings, so only `MONGODB_U
 
 ## Forward-kinematics evaluation tool
 
-The `src.fk_tool` module is a standalone offline utility that validates and visualizes signs *without* touching the robot. It ports Prof. LaMack's MATLAB `PlotRobotLinks` reference into Python with a 5-DOF chain per arm: shoulder swing → shoulder abduction → elbow flexion → wrist flexion → wrist pronation, using 4×4 homogeneous transformation matrices.
+The `src.fk_tool` module is a standalone offline utility that validates and visualizes signs *without* touching the robot. It implements a 5-DOF chain per arm: shoulder swing → shoulder abduction → elbow flexion → wrist flexion → wrist pronation, using 4×4 homogeneous transformation matrices.
 
 ### Subcommands
 
@@ -264,7 +253,6 @@ ASL-Robot/
 │   └── fk_tool/
 ├── eval/
 ├── requirements.txt
-├── CLAUDE.md
 └── README.md
 ```
 

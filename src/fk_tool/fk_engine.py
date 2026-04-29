@@ -1,5 +1,5 @@
 """
-Forward kinematics engine — numpy port of Professor LaMack's MATLAB PlotRobotLinks.
+Forward kinematics engine.
 
 5-DOF kinematic chain per arm using homogeneous 4x4 transformation matrices.
 Joint angles q1-q5 in radians are chained to produce 3D joint positions.
